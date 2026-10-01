@@ -164,12 +164,12 @@ class Persona5CRUDScroll:
         # colocar otros widgets encima. Este será el "fondo" de
         # toda la aplicación.
         self.canvas_main = tk.Canvas(
-            root,                  # Widget padre: dentro de qué va.
-            width=950,             # Ancho en píxeles.
-            height=650,            # Alto en píxeles.
-            bg="black",            # Color de fondo (por nombre).
-            highlightthickness=0   # Quita el borde de "foco" que
-                                   # Tkinter dibuja alrededor.
+            root,                   # Widget padre: dentro de qué va.
+            width=950,              # Ancho en píxeles.
+            height=650,             # Alto en píxeles.
+            bg="black",             # Color de fondo (por nombre).
+            highlightthickness=0    # Quita el borde de "foco" que
+                                    # Tkinter dibuja alrededor.
         )
 
         # pack() coloca el widget en la ventana.

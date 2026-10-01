@@ -9,12 +9,12 @@ import preguntas
 # código hexadecimal por todo el archivo y para poder cambiar
 # el estilo completo desde un solo lugar si hace falta.
 
-COLOR_FONDO   = "#000000"   # Negro: fondo general de las ventanas.
-COLOR_ROJO    = "#DC0000"   # Rojo característico de P5R.
-COLOR_BLANCO  = "#FFFFFF"   # Blanco: texto principal, franjas.
-COLOR_AMARILLO = "#FFF200"  # Amarillo: acentos, texto al pasar
-                              # el mouse por encima (hover).
-COLOR_GRIS    = "#666666"   # Gris: texto secundario / pistas.
+COLOR_FONDO   = "#000000"     # Negro: fondo general de las ventanas.
+COLOR_ROJO    = "#DC0000"     # Rojo característico de P5R.
+COLOR_BLANCO  = "#FFFFFF"     # Blanco: texto principal, franjas.
+COLOR_AMARILLO = "#FFF200"    # Amarillo: acentos, texto al pasar
+                                # el mouse por encima (hover).
+COLOR_GRIS    = "#666666"     # Gris: texto secundario / pistas.
 
 FUENTE_TITULO  = ("Impact", 30)          # Fuente grande de título.
 FUENTE_SUB     = ("Impact", 14)          # Subtítulos / botones.
