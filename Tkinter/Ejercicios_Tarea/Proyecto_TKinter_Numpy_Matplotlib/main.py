@@ -6,7 +6,7 @@ class Menu:
     def __init__(self, ventana):
         self.ventana = ventana
         self.ventana.title("Graficas y Ecuaciones")
-        self.ventana.geometry("400x450")
+        self.ventana.geometry("450x450")
         self.ventana.configure(bg="#000000")
         #Para que el usuario no pueda cambiar el tamaño de la ventana
         self.ventana.resizable(False, False) 
@@ -14,7 +14,7 @@ class Menu:
         #### Esto le dará la estetica de Persona 5 ####
         self.canvas_main = tk.Canvas(
             ventana,               
-            width=400,              
+            width=450,              
             height=450,             
             bg="#000000",
             highlightthickness=0
@@ -65,42 +65,71 @@ class Menu:
                     angle=-6,                 
                     anchor="nw"               
                 )
-'''
+
         ## Botones ##
         self.crear_boton_canvas(
                     "ecu. primer grado",
+                    160,
                     50,
-                    320,
-                    "> Gráfica de una ecuación\nde primer grado",
-                    self.ejecutar_crear
+                    "> Gráfica de una ecuación\n    de primer grado",
+                    nueva_ventana
                 )
+        self.crear_boton_canvas(
+                    "ecu. segundo grado",
+                    190,
+                    120,
+                    "> Gráfica de una ecuación\n    de segundo grado",
+                    nueva_ventana
+                )
+        self.crear_boton_canvas(
+                    "ecu. tercer grado",
+                    220,
+                    190,
+                    "> Sistema de\n    ecuaciones",
+                    nueva_ventana
+                )
+        self.crear_boton_canvas(
+            "boton salir",
+            300,
+            400,
+            "> SALIR",
+            lambda: None
+        )
 
     ## Método de la clase para crear los botones a base de texto ##
     def crear_boton_canvas(self, tag_base, x, y, texto, comando):
-        text_id = self.canvas_main.create_text(
-            x,                   # Posición X recibida.
-            y,                   # Posición Y recibida.
-            text=texto,          # Texto recibido.
-            fill="#FFFFFF",      # Color inicial: blanco.
-            font=("Impact", 18), # Fuente y tamaño.
-            angle=3,             # Ligera inclinación.
-            anchor="nw",         # Ancla: esquina sup. izq.
-            tags=tag_base        # Etiqueta para identificarlo.
+        ## Esto crea el texto que tendrá el botón
+        ## AL crear el texto se le asigna un id que guardamos
+        text_id = self.canvas_main.create_text( x,                   # Posición X recibida.
+                                                y,                   # Posición Y recibida.
+                                                text=texto,          # Texto recibido.
+                                                fill="#FFFFFF",      # Color inicial: blanco.
+                                                font=("Impact", 15), # Fuente y tamaño.
+                                                angle=4,             # Ligera inclinación.
+                                                anchor="nw",         # Ancla: esquina sup. izq.
+                                                tags=tag_base        # Etiqueta para identificarlo.
+                                            )
+        ## el tag_bind() sirve para decirle que vigile en el canvas_main 
+        # al texto con el texto_id y revise si ocurre un evento, para después 
+        # realizar una acción
+        self.canvas_main.tag_bind( #TE PIDE: que vigilo, que condicion vigilo y que hago si sucede
+            text_id,
+            "<Enter>",             # Esto detecta cuando el mouse toca el texto
+            ### El lambda sirve como "reemplazo" de crear una función completa para 
+            # solo cambiar el color, tipo:              def función(e):
+            lambda e: self.canvas_main.itemconfig(#         comando(que sería el fill)
+                    text_id,
+                    fill="#FFF200",   # Amarillo (efecto "hover").
+                    font=("Impact", 16), # Más grande la letra 
+                )
         )
         self.canvas_main.tag_bind(
             text_id,
-            "<Enter>",
-            lambda e: self.canvas_main.itemconfig(
+            "<Leave>",               # El itemconfig sirve para del objeto con el text_id 
+            lambda e: self.canvas_main.itemconfig( # cambiarle algun atributo o así
                 text_id,
-                fill="#FFF200"   # Amarillo (efecto "hover").
-            )
-        )
-        self.canvas_main.tag_bind(
-            text_id,
-            "<Leave>",
-            lambda e: self.canvas_main.itemconfig(
-                text_id,
-                fill="#FFFFFF"   # Vuelve al blanco original.
+                fill="#FFFFFF",   # Vuelve al blanco original.
+                font=("Impact", 15),
             )
         )
         self.canvas_main.tag_bind(
@@ -109,7 +138,9 @@ class Menu:
                     lambda e: comando()
                 )
 
-'''
+
+def nueva_ventana():
+    mensajito = tk.Toplevel()
 
 ### Ejecutar la aplicación ###
 if __name__ == "__main__":

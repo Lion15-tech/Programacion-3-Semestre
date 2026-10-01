@@ -562,15 +562,15 @@ class Persona5CRUDScroll:
         # número (el ID del elemento dibujado) que guardamos en
         # text_id para poder modificarlo o asociarle eventos.
         text_id = self.canvas_main.create_text(
-            x,                   # Posición X recibida.
-            y,                   # Posición Y recibida.
-            text=texto,          # Texto recibido.
-            fill="#FFFFFF",      # Color inicial: blanco.
-            font=("Impact", 18), # Fuente y tamaño.
-            angle=3,             # Ligera inclinación.
-            anchor="nw",         # Ancla: esquina sup. izq.
-            tags=tag_base        # Etiqueta para identificarlo.
-        )
+                                                x,                   # Posición X recibida.
+                                                y,                   # Posición Y recibida.
+                                                text=texto,          # Texto recibido.
+                                                fill="#FFFFFF",      # Color inicial: blanco.
+                                                font=("Impact", 18), # Fuente y tamaño.
+                                                angle=3,             # Ligera inclinación.
+                                                anchor="nw",         # Ancla: esquina sup. izq.
+                                                tags=tag_base        # Etiqueta para identificarlo.
+                                            )
 
 
         # ====================================================
