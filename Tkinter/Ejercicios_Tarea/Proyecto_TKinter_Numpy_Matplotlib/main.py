@@ -117,26 +117,59 @@ class Menu:
             "<Enter>",             # Esto detecta cuando el mouse toca el texto
             ### El lambda sirve como "reemplazo" de crear una función completa para 
             # solo cambiar el color, tipo:              def función(e):
-            lambda e: self.canvas_main.itemconfig(#         comando(que sería el fill)
-                    text_id,
-                    fill="#FFF200",   # Amarillo (efecto "hover").
-                    font=("Impact", 16), # Más grande la letra 
-                )
+            lambda e: self.entrar_estilo_cursor_texto(text_id)
         )
         self.canvas_main.tag_bind(
             text_id,
             "<Leave>",               # El itemconfig sirve para del objeto con el text_id 
-            lambda e: self.canvas_main.itemconfig( # cambiarle algun atributo o así
-                text_id,
-                fill="#FFFFFF",   # Vuelve al blanco original.
-                font=("Impact", 15),
-            )
+            lambda e: self.desactivar_efecto_boton(text_id)
         )
         self.canvas_main.tag_bind(
                     text_id,
                     "<Button-1>",
                     lambda e: comando()
                 )
+
+    def entrar_estilo_cursor_texto(self, text_id):
+        ## Esto crea los 2 trapecios que se ponen detras del texto
+        ## Así como cuando seleccionas el texto en Persona 5
+        self.canvas_main.itemconfig(
+                    text_id,
+                    fill="#000000",   # Negro (efecto "hover").
+                    font=("Impact", 16), # Más grande la letra 
+                    )
+        x1, y1, x2, y2 = self.canvas_main.bbox(text_id)
+
+        tag_fondo = f"fondo_{text_id}"
+
+        margen_celeste = 4
+        poligono1_id = self.canvas_main.create_polygon(
+                                x1 - margen_celeste,      y1 - margen_celeste - 3,
+                                x2 + margen_celeste + 20, y1 - margen_celeste - 3,
+                                x2 + margen_celeste,      y2 + margen_celeste - 3,
+                                x1 - margen_celeste - 20, y2 + margen_celeste - 3,
+                                fill="#00CCFF",
+                                tag=tag_fondo
+                            )
+        poligono2_id = self.canvas_main.create_polygon(
+                                x1 - 15, y1,
+                                x2,      y1,
+                                x2 + 15, y2,
+                                x1,      y2,
+                                fill="#FF0000",
+                                tag=tag_fondo
+                            )
+        self.canvas_main.tag_lower(poligono1_id, text_id)
+        self.canvas_main.tag_lower(poligono2_id, text_id)
+
+    def desactivar_efecto_boton(self, text_id):
+        self.canvas_main.itemconfig(
+                    text_id,
+                    fill="#FFFFFF",
+                    font=("Impact", 15)
+                    )
+        tag_fondo = f"fondo_{text_id}"
+        self.canvas_main.delete(tag_fondo)
 
 
 def nueva_ventana():
