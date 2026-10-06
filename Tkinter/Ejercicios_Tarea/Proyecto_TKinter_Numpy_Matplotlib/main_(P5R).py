@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-
+import os
 
 class Menu:
     def __init__(self, ventana):
@@ -10,6 +10,17 @@ class Menu:
         self.ventana.configure(bg="#000000")
         #Para que el usuario no pueda cambiar el tamaño de la ventana
         self.ventana.resizable(False, False) 
+
+
+        #### CONFIGURACIÓN DEL ICONO ####
+        self.carpeta_proyecto = os.path.dirname(__file__)
+        self.ruta_icono = os.path.join(self.carpeta_proyecto, "logo_cecyteq.png")
+
+        try:
+            self.icono = tk.PhotoImage(file=self.ruta_icono)
+            self.ventana.iconphoto(False, self.icono)
+        except Exception as e:
+            print(f"Error al cargar el icono: {e}")
 
         #### Esto le dará la estetica de Persona 5 ####
         self.canvas_main = tk.Canvas(
@@ -68,33 +79,86 @@ class Menu:
 
         ## Botones ##
         self.crear_boton_canvas(
-                    "ecu. primer grado",
+                    "ecu._primer_grado",
                     160,
                     50,
                     "> Gráfica de una ecuación\n    de primer grado",
-                    nueva_ventana
+                    self.ventana_primer_grado
                 )
         self.crear_boton_canvas(
-                    "ecu. segundo grado",
+                    "ecu._segundo_grado",
                     190,
                     120,
                     "> Gráfica de una ecuación\n    de segundo grado",
-                    nueva_ventana
+                    self.ventana_segundo_grado
                 )
         self.crear_boton_canvas(
-                    "ecu. tercer grado",
+                    "ecu._tercer_grado",
                     220,
                     190,
                     "> Sistema de\n    ecuaciones",
-                    nueva_ventana
+                    self.ventana_sistemas_ecuaciones
                 )
         self.crear_boton_canvas(
-            "boton salir",
+            "boton_salir",
             300,
             400,
             "> SALIR",
-            lambda: None
+            self.cerrar_app
         )
+    
+    def cerrar_app(self):
+        self.ventana.after(10, self.ventana.destroy)
+
+
+    def ventana_primer_grado(self):
+        new_ventana = tk.Toplevel()
+        new_ventana.title("Gráfica Ecuación Primer Grado")
+        new_ventana.geometry("400x300")
+        if hasattr(self, 'icono'):
+            new_ventana.iconphoto(False, self.icono)
+
+        canvas_primer_grado = tk.Canvas(
+                new_ventana,
+                width=400,
+                height=300,
+                bg="#000000",
+                highlightthickness=0
+            )
+        canvas_primer_grado.pack(fill="both", expand=True)
+
+
+    def ventana_segundo_grado(self):
+        new_ventana = tk.Toplevel()
+        new_ventana.title("Gráfica Ecuación Primer Grado")
+        new_ventana.geometry("400x300")
+        if hasattr(self, 'icono'):
+            new_ventana.iconphoto(False, self.icono)
+
+        canvas_segundo_grado = tk.Canvas(
+                new_ventana,
+                width=400,
+                height=300,
+                bg="#000000",
+                highlightthickness=0
+            )
+        canvas_segundo_grado.pack(fill="both", expand=True)
+
+    def ventana_sistemas_ecuaciones(self):
+        new_ventana = tk.Toplevel()
+        new_ventana.title("Gráfica Ecuación Primer Grado")
+        new_ventana.geometry("400x300")
+        if hasattr(self, 'icono'):
+            new_ventana.iconphoto(False, self.icono)
+
+        canvas_sistema_ecuaciones = tk.Canvas(
+                new_ventana,
+                width=400,
+                height=300,
+                bg="#000000",
+                highlightthickness=0
+            )
+        canvas_sistema_ecuaciones.pack(fill="both", expand=True)
 
     ## Método de la clase para crear los botones a base de texto ##
     def crear_boton_canvas(self, tag_base, x, y, texto, comando):
@@ -113,19 +177,19 @@ class Menu:
         # al texto con el texto_id y revise si ocurre un evento, para después 
         # realizar una acción
         self.canvas_main.tag_bind( #TE PIDE: que vigilo, que condicion vigilo y que hago si sucede
-            text_id,
+            tag_base,
             "<Enter>",             # Esto detecta cuando el mouse toca el texto
             ### El lambda sirve como "reemplazo" de crear una función completa para 
             # solo cambiar el color, tipo:              def función(e):
             lambda e: self.entrar_estilo_cursor_texto(text_id)
         )
         self.canvas_main.tag_bind(
-            text_id,
+            tag_base,
             "<Leave>",               # El itemconfig sirve para del objeto con el text_id 
             lambda e: self.desactivar_efecto_boton(text_id)
         )
         self.canvas_main.tag_bind(
-                    text_id,
+                    tag_base,
                     "<Button-1>",
                     lambda e: comando()
                 )
@@ -163,17 +227,16 @@ class Menu:
         self.canvas_main.tag_lower(poligono2_id, text_id)
 
     def desactivar_efecto_boton(self, text_id):
-        self.canvas_main.itemconfig(
-                    text_id,
-                    fill="#FFFFFF",
-                    font=("Impact", 15)
-                    )
-        tag_fondo = f"fondo_{text_id}"
-        self.canvas_main.delete(tag_fondo)
+        # Revisamos si la ventana todavía existe
+        if self.canvas_main.winfo_exists():
+            self.canvas_main.itemconfig(
+                        text_id,
+                        fill="#FFFFFF",
+                        font=("Impact", 15)
+                        )
+            tag_fondo = f"fondo_{text_id}"
+            self.canvas_main.delete(tag_fondo)
 
-
-def nueva_ventana():
-    mensajito = tk.Toplevel()
 
 ### Ejecutar la aplicación ###
 if __name__ == "__main__":
