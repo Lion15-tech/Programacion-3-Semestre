@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 import os
+import numpy as np
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Menu:
     def __init__(self, ventana):
@@ -111,54 +114,6 @@ class Menu:
         self.ventana.after(10, self.ventana.destroy)
 
 
-    def ventana_primer_grado(self):
-        new_ventana = tk.Toplevel()
-        new_ventana.title("Gráfica Ecuación Primer Grado")
-        new_ventana.geometry("400x300")
-        if hasattr(self, 'icono'):
-            new_ventana.iconphoto(False, self.icono)
-
-        canvas_primer_grado = tk.Canvas(
-                new_ventana,
-                width=400,
-                height=300,
-                bg="#000000",
-                highlightthickness=0
-            )
-        canvas_primer_grado.pack(fill="both", expand=True)
-
-
-    def ventana_segundo_grado(self):
-        new_ventana = tk.Toplevel()
-        new_ventana.title("Gráfica Ecuación Primer Grado")
-        new_ventana.geometry("400x300")
-        if hasattr(self, 'icono'):
-            new_ventana.iconphoto(False, self.icono)
-
-        canvas_segundo_grado = tk.Canvas(
-                new_ventana,
-                width=400,
-                height=300,
-                bg="#000000",
-                highlightthickness=0
-            )
-        canvas_segundo_grado.pack(fill="both", expand=True)
-
-    def ventana_sistemas_ecuaciones(self):
-        new_ventana = tk.Toplevel()
-        new_ventana.title("Gráfica Ecuación Primer Grado")
-        new_ventana.geometry("400x300")
-        if hasattr(self, 'icono'):
-            new_ventana.iconphoto(False, self.icono)
-
-        canvas_sistema_ecuaciones = tk.Canvas(
-                new_ventana,
-                width=400,
-                height=300,
-                bg="#000000",
-                highlightthickness=0
-            )
-        canvas_sistema_ecuaciones.pack(fill="both", expand=True)
 
     ## Método de la clase para crear los botones a base de texto ##
     def crear_boton_canvas(self, tag_base, x, y, texto, comando):
@@ -199,7 +154,7 @@ class Menu:
         ## Así como cuando seleccionas el texto en Persona 5
         self.canvas_main.itemconfig(
                     text_id,
-                    fill="#000000",   # Negro (efecto "hover").
+                    fill="#FFFFFF",   # Negro (efecto "hover").
                     font=("Impact", 16), # Más grande la letra 
                     )
         x1, y1, x2, y2 = self.canvas_main.bbox(text_id)
@@ -237,6 +192,73 @@ class Menu:
             tag_fondo = f"fondo_{text_id}"
             self.canvas_main.delete(tag_fondo)
 
+
+
+    #### ---------------------------------- ####
+    ####            Gráficas                ####
+    ### ----------------------------------- ####
+    def ventana_primer_grado(self):
+        new_ventana = tk.Toplevel()
+        new_ventana.title("Gráfica Ecuación Primer Grado")
+        new_ventana.geometry("400x300")
+        if hasattr(self, 'icono'):
+            new_ventana.iconphoto(False, self.icono)
+
+        canvas_primer_grado = tk.Canvas(
+                new_ventana,
+                width=400,
+                height=300,
+                bg="#000000",
+                highlightthickness=0
+            )
+        canvas_primer_grado.pack(fill="both", expand=True)
+
+
+    def ventana_segundo_grado(self):
+        new_ventana = tk.Toplevel()
+        new_ventana.title("Gráfica Ecuación Primer Grado")
+        new_ventana.geometry("400x300")
+        if hasattr(self, 'icono'):
+            new_ventana.iconphoto(False, self.icono)
+
+        canvas_segundo_grado = tk.Canvas(
+                new_ventana,
+                width=400,
+                height=300,
+                bg="#000000",
+                highlightthickness=0
+            )
+        canvas_segundo_grado.pack(fill="both", expand=True)
+
+
+    def ventana_sistemas_ecuaciones(self):
+        new_ventana = tk.Toplevel()
+        new_ventana.title("Gráfica Ecuación Primer Grado")
+        new_ventana.geometry("400x300")
+        if hasattr(self, 'icono'):
+            new_ventana.iconphoto(False, self.icono)
+
+        canvas_sistema_ecuaciones = tk.Canvas(
+                new_ventana,
+                width=400,
+                height=300,
+                bg="#000000",
+                highlightthickness=0
+            )
+        canvas_sistema_ecuaciones.pack(fill="both", expand=True)
+
+
+    def procesar_ecuacion_primer_grado(self):
+        pass
+
+
+    def procesar_ecuacion_primer_grado(self):
+        pass
+
+
+    def procesar_ecuacion_primer_grado(self):
+        pass
+    
 
 ### Ejecutar la aplicación ###
 if __name__ == "__main__":
