@@ -25,7 +25,7 @@ class Menu:
         except Exception as e:
             print(f"Error al cargar el icono: {e}")
 
-        #### Esto le dará la estetica de Persona 5 ####
+        #### Esto permitirá la estetica de Persona 5 ####
         self.canvas_main = tk.Canvas(
             ventana,               
             width=450,              
