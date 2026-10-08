@@ -196,56 +196,190 @@ class Menu:
 
     #### ---------------------------------- ####
     ####            Gráficas                ####
-    ### ----------------------------------- ####
+    #### ---------------------------------- ####
     def ventana_primer_grado(self):
         new_ventana = tk.Toplevel()
         new_ventana.title("Gráfica Ecuación Primer Grado")
-        new_ventana.geometry("400x300")
+        new_ventana.geometry("600x400")
+        new_ventana.resizable(False, False)
         if hasattr(self, 'icono'):
             new_ventana.iconphoto(False, self.icono)
 
-        canvas_primer_grado = tk.Canvas(
-                new_ventana,
-                width=400,
-                height=300,
-                bg="#000000",
-                highlightthickness=0
-            )
-        canvas_primer_grado.pack(fill="both", expand=True)
+        canvas = tk.Canvas(new_ventana, 
+                        width=600, 
+                        height=400, 
+                        bg="#000000",
+                        highlightthickness=0)
+        canvas.pack(fill="both", expand=True)
+
+        # Mitad izquierda: Dibujo en Canvas
+        canvas.create_polygon(
+                    300, 50,
+                    120, 350,
+                    260, 400,
+                    300, 400,
+                    fill="#DC0000")
+        canvas.create_polygon( ## Linea blanca divisoria ##
+                    300, 50,      
+                    110, 350,     
+                    240, 400,
+                    270, 400,
+                    130, 345,
+                    300, 70,
+                    fill="#FFFFFF"  # Blanco.
+                )
+        canvas.create_polygon(
+                    0, 0,
+                    150, 0,
+                    0, 60,
+                    fill="#DC0000")
+        
+        canvas.create_text(
+                            140, 15, 
+                            text="Ecuación de\n1er Grado", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 17), 
+                            anchor="nw",
+                            angle=-4)
+        canvas.create_text(
+                                    10, 100, 
+                                    text="Par ordenado 1:", 
+                                    fill="#FFFFFF", 
+                                    font=("Impact", 14), 
+                                    anchor="nw",
+                                    angle=4)
+        canvas.create_text(
+                                    10, 170, 
+                                    text="Par orenado 2:", 
+                                    fill="#FFFFFF", 
+                                    font=("Impact", 14), 
+                                    anchor="nw",
+                                    angle=-4)
+
+        # Mitad derecha: Frame incrustado
+        self.frame_1ro = tk.Frame(canvas, 
+                                bg="#FFFFFF", 
+                                padx=15, 
+                                pady=15)
+        self.frame_1ro.pack_propagate(False)
+        canvas.create_window(270, 0, 
+                            window=self.frame_1ro, 
+                            anchor="nw", 
+                            width=330, 
+                            height=400)
 
 
     def ventana_segundo_grado(self):
         new_ventana = tk.Toplevel()
-        new_ventana.title("Gráfica Ecuación Primer Grado")
-        new_ventana.geometry("400x300")
+        new_ventana.title("Gráfica Ecuación Segundo Grado")
+        new_ventana.geometry("600x400")
+        new_ventana.resizable(False, False)
         if hasattr(self, 'icono'):
             new_ventana.iconphoto(False, self.icono)
 
-        canvas_segundo_grado = tk.Canvas(
-                new_ventana,
-                width=400,
-                height=300,
-                bg="#000000",
-                highlightthickness=0
-            )
-        canvas_segundo_grado.pack(fill="both", expand=True)
+        canvas = tk.Canvas(new_ventana, 
+                        width=600, 
+                        height=400, 
+                        bg="#000000",
+                        highlightthickness=0)
+        canvas.pack(fill="both", expand=True)
 
+        # Mitad izquierda: Dibujo en Canvas
+        canvas.create_polygon(
+                    300, 50,
+                    120, 350,
+                    260, 400,
+                    300, 400,
+                    fill="#DC0000")
+        canvas.create_polygon( ## Linea blanca divisoria ##
+                    300, 50,      
+                    110, 350,     
+                    240, 400,
+                    270, 400,
+                    130, 345,
+                    300, 70,
+                    fill="#FFFFFF"  # Blanco.
+                )
+        canvas.create_polygon(
+                    0, 0,
+                    150, 0,
+                    0, 60,
+                    fill="#DC0000")
+        canvas.create_text(
+                            20, 160, 
+                            text="Ecuación de\n2do Grado", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 22), 
+                            anchor="nw")
 
+        # Mitad derecha: Frame incrustado
+        self.frame_2do = tk.Frame(canvas, 
+                                bg="#FFFFFF", 
+                                padx=15, 
+                                pady=15)
+        self.frame_2do.pack_propagate(False)
+        canvas.create_window(270, 0, 
+                            window=self.frame_2do, 
+                            anchor="nw", 
+                            width=330, 
+                            height=400)
+
+        
     def ventana_sistemas_ecuaciones(self):
         new_ventana = tk.Toplevel()
         new_ventana.title("Gráfica Ecuación Primer Grado")
-        new_ventana.geometry("400x300")
+        new_ventana.geometry("600x400")
+        new_ventana.resizable(False, False)
         if hasattr(self, 'icono'):
             new_ventana.iconphoto(False, self.icono)
 
-        canvas_sistema_ecuaciones = tk.Canvas(
-                new_ventana,
-                width=400,
-                height=300,
-                bg="#000000",
-                highlightthickness=0
-            )
-        canvas_sistema_ecuaciones.pack(fill="both", expand=True)
+        canvas = tk.Canvas(new_ventana, 
+                        width=600, 
+                        height=400, 
+                        bg="#000000",
+                        highlightthickness=0)
+        canvas.pack(fill="both", expand=True)
+
+        # Mitad izquierda: Dibujo en Canvas
+        canvas.create_polygon(
+                    300, 50,
+                    120, 350,
+                    260, 400,
+                    300, 400,
+                    fill="#DC0000")
+        canvas.create_polygon( ## Linea blanca divisoria ##
+                    300, 50,      
+                    110, 350,     
+                    240, 400,
+                    270, 400,
+                    130, 345,
+                    300, 70,
+                    fill="#FFFFFF"  # Blanco.
+                )
+        canvas.create_polygon(
+                    0, 0,
+                    150, 0,
+                    0, 60,
+                    fill="#DC0000")
+        canvas.create_text(
+                            20, 160, 
+                            text="Sistemas de \necuaciones", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 22), 
+                            anchor="nw")
+
+        # Mitad derecha: Frame incrustado
+        self.frame_sistemas_ecuaciones = tk.Frame(canvas, 
+                                bg="#FFFFFF", 
+                                padx=15, 
+                                pady=15)
+        self.frame_sistemas_ecuaciones.pack_propagate(False)
+        canvas.create_window(270, 0, 
+                            window=self.frame_sistemas_ecuaciones, 
+                            anchor="nw", 
+                            width=330, 
+                            height=400)
+
 
 
     def procesar_ecuacion_primer_grado(self):

@@ -35,13 +35,48 @@ import os
 # NumPy: cálculo numérico. Aquí se usa para: crear rangos de valores
 # (linspace), resolver sistemas de ecuaciones (linalg.solve), calcular
 # determinantes (linalg.det), comparar decimales (isclose) y crear mallas (meshgrid).
+# ---- GUÍA RÁPIDA DE NUMPY (qué es y qué funciones se usan aquí) ----
+# NumPy trabaja con "arreglos" (np.array): listas de números de un solo tipo
+# guardadas de forma compacta. Su gran ventaja es la VECTORIZACIÓN: una
+# operación como  m * x + b  se aplica a TODOS los elementos del arreglo a la
+# vez (sin escribir un for), y es mucho más rápida que hacerlo con listas.
+# Ejemplo:  x = np.array([0, 1, 2]);  2 * x - 4  ->  array([-4, -2, 0])
+#
+# Funciones de NumPy usadas en este programa:
+#   np.linspace(a, b, n)   -> n números IGUALMENTE espaciados de a hasta b
+#                             (incluye a y b). Sirve para "muestrear" una curva.
+#   np.array([...])        -> crea un arreglo (1D = vector, 2D = matriz).
+#   np.linalg.det(A)       -> determinante de una matriz cuadrada.
+#   np.linalg.solve(A, B)  -> resuelve el sistema A·v = B (ver más abajo).
+#   np.isclose(a, b)       -> compara decimales con tolerancia (ver más abajo).
+#   np.sqrt(v)             -> raíz cuadrada.
+#   np.meshgrid(x, y)      -> convierte dos vectores en dos mallas 2D (para 3D).
+#   np.full_like(M, k)     -> arreglo del mismo tamaño que M relleno con k.
 import numpy as np
 
 # pyplot es la interfaz principal de Matplotlib para crear figuras y ejes.
+# ---- GUÍA RÁPIDA DE MATPLOTLIB (cómo se construye una gráfica) ----
+# Matplotlib dibuja con 3 piezas jerárquicas:
+#   Figure (fig): el "lienzo" completo, como una hoja en blanco.
+#   Axes   (ax) : una gráfica dentro de la hoja (con sus ejes, cuadrícula,
+#                 título...). Una Figure puede tener varios Axes.
+#   Artists     : todo lo que se dibuja sobre un Axes (líneas, puntos, texto...).
+#
+# Receta que se repite en TODAS las ventanas del programa:
+#   1) fig, ax = plt.subplots(...)  -> crear lienzo + ejes.
+#   2) ax.plot(...), ax.axvline(...) -> dibujar líneas y puntos.
+#   3) ax.set_title / set_xlabel / grid / legend -> decorar.
+#   4) FigureCanvasTkAgg(fig, master=panel) -> convertir la figura en un
+#      widget de Tkinter y mostrarlo dentro de la ventana.
+#   5) plt.close(fig) -> liberar la figura del administrador de pyplot.
 import matplotlib.pyplot as plt
 
 # FigureCanvasTkAgg es el "puente" entre Matplotlib y Tkinter: convierte una
 # figura de Matplotlib en un widget que se puede colocar dentro de una ventana Tk.
+# Un "backend" es el motor que convierte una figura en algo visible.
+# "TkAgg" = Agg (renderiza la figura como una imagen de píxeles en memoria,
+# usando la librería gráfica Anti-Grain Geometry) + Tk (la muestra en un
+# widget de Tkinter). FigureCanvasTkAgg es la clase que hace ese puente.
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
@@ -86,17 +121,17 @@ class MenuPrincipal:
         self.ventana.config(bg=COLOR_FONDO_PRINCIPAL)
 
         #### CONFIGURACIÓN DEL ICONO ####
+        # __file__ es la ruta de este archivo .py; dirname extrae su carpeta.
+        # Así el programa busca el icono junto al script, sin importar desde
+        # dónde se ejecute.
+        self.carpeta_proyecto = os.path.dirname(__file__)
+
+        # os.path.join une carpeta + nombre de archivo con el separador correcto.
+        self.ruta_icono = os.path.join(self.carpeta_proyecto, "logo_cecyteq.png")
+
         # try/except: si falta el archivo o está dañado, el programa NO se cae;
         # solo imprime el error en consola y continúa sin icono.
         try:
-            # __file__ es la ruta de este archivo .py; dirname extrae su carpeta.
-            # Así el programa busca el icono junto al script, sin importar desde
-            # dónde se ejecute.
-            self.carpeta_proyecto = os.path.dirname(__file__)
-    
-            # os.path.join une carpeta + nombre de archivo con el separador correcto.
-            self.ruta_icono = os.path.join(self.carpeta_proyecto, "logo_cecyteq.png")
-    
             # PhotoImage carga la imagen PNG en memoria para Tkinter.
             # Se guarda en self.icono (si fuera variable local, Python la
             # borraría y el icono desaparecería: Tkinter no conserva referencia).
@@ -212,6 +247,12 @@ class MenuPrincipal:
         for coef, var in terminos:
             # np.isclose compara con tolerancia (evita errores de decimales
             # tipo 0.0000000001). Si el coeficiente es ~0, ese término no se escribe.
+            # POR QUÉ np.isclose y no "coef == 0": los números decimales (float) se guardan
+            # en binario y arrastran pequeños errores (por ejemplo 0.1 + 0.2 = 0.30000000000000004).
+            # Después de resolver sistemas con NumPy un coeficiente que "debería ser 0"
+            # puede salir como 1e-16. np.isclose(a, b) devuelve True si
+            #     |a - b| <= atol + rtol * |b|      (por defecto atol=1e-8 y rtol=1e-5)
+            # es decir, si son "prácticamente iguales". Así 1e-16 se trata como 0.
             if np.isclose(coef, 0):
                 continue
             # Se trabaja con el valor absoluto; el signo se agrega después.
@@ -297,6 +338,14 @@ class MenuPrincipal:
             # Dibuja un círculo azul ('o') de tamaño 8. zorder=5 = se dibuja
             # por encima de las líneas. Solo el primer punto lleva etiqueta de
             # leyenda ("Puntos ingresados") para que no se repita en la leyenda.
+            # ax.plot(x, y, formato, ...) dibuja datos en el plano. Si x e y son UN solo
+            # número, dibuja un único punto. El texto 'o' es un "código de marcador":
+            # 'o' = círculo, 'D' = rombo, 'go' = verde + círculo, 'ro' = rojo + círculo.
+            # Parámetros usados: markersize = tamaño del marcador en puntos tipográficos;
+            # zorder = orden de capas (mayor = más arriba); label = nombre que se mostrará
+            # en la leyenda (si es None, ese elemento NO aparece en la leyenda).
+            # Ojo con las coordenadas: ax.plot trabaja en "coordenadas de datos", o sea,
+            # las mismas unidades de los ejes (el punto (3, 2) se ubica en x=3, y=2).
             ax.plot(px, py, 'o', color="#1565C0", markersize=8, zorder=5,
                     label="Puntos ingresados" if i == 0 else None)
             # annotate escribe el texto "A(1, 2)" junto al punto.
@@ -424,11 +473,24 @@ class MenuPrincipal:
             )
         else:
             # Pendiente: m = (y2 - y1) / (x2 - x1).
+            # ===== MATEMÁTICA: RECTA QUE PASA POR DOS PUNTOS =====
+            # Forma pendiente-ordenada:  y = m·x + b
+            #   m = pendiente = cuánto sube y por cada unidad que avanza x:
+            #           m = (y2 - y1) / (x2 - x1)      ("cambio en y" entre "cambio en x")
+            #   b = ordenada al origen = valor de y cuando x = 0. Como el punto (x1, y1)
+            #       debe cumplir la ecuación:  y1 = m·x1 + b   ->   b = y1 - m·x1
+            # Ejemplo con los valores por defecto A(0, -4) y B(3, 2):
+            #   m = (2 - (-4)) / (3 - 0) = 6/3 = 2   y   b = -4 - 2·0 = -4   ->  y = 2x - 4
+            # (Si x1 == x2 el denominador sería 0: por eso la recta vertical se trató antes.)
             m = (y2 - y1) / (x2 - x1)
             # Ordenada al origen: de y = mx + b se despeja b = y1 - m·x1.
             b = y1 - m * x1
             # Si m no es 0, la recta cruza el eje X en x = -b/m (la raíz).
             if not np.isclose(m, 0):
+                # La RAÍZ es donde la recta cruza el eje X, o sea donde y = 0:
+                #     0 = m·x + b   ->   m·x = -b   ->   x = -b / m
+                # Solo existe si m ≠ 0 (si m = 0 la recta es horizontal y nunca cruza, o bien
+                # coincide con el eje X). Con y = 2x - 4:  x = -(-4)/2 = 2  ->  punto (2, 0).
                 raiz = -b / m
                 texto_raiz = f"Raíz (Intersección X): ({n(raiz)}, 0)"
             else:
@@ -457,6 +519,12 @@ class MenuPrincipal:
 
         # Rango de la gráfica: que se vean los puntos, el origen y las intersecciones
         # Listas de coordenadas que deben quedar visibles en la ventana.
+        # ===== CÓMO SE ELIGE LA "VENTANA" DE LA GRÁFICA =====
+        # Una recta es infinita, así que hay que decidir qué tramo mostrar. Se reúnen
+        # las coordenadas que SÍ deben verse (puntos, origen, raíz, intersección con Y)
+        # y se toma el mínimo y el máximo de cada eje. Luego se agrega un margen
+        # ("padding") de 30% del rango (con mínimo de 2 unidades) para que nada quede
+        # pegado al borde. Resultado: xmin - pad ... xmax + pad.
         refs_x = [x1, x2, 0]
         refs_y = [y1, y2, 0]
         if raiz is not None:
@@ -470,39 +538,78 @@ class MenuPrincipal:
         x_min, x_max = min(refs_x) - pad_x, max(refs_x) + pad_x
 
         # Crea la figura (5x4 pulgadas, 100 puntos por pulgada) y sus ejes.
+        # plt.subplots() crea a la vez una Figure y un Axes y los devuelve como tupla
+        # (por eso se desempaqueta en "fig, ax").
+        #   figsize=(5, 4) -> tamaño en PULGADAS: 5 de ancho por 4 de alto.
+        #   dpi=100        -> "puntos por pulgada" (resolución).
+        # Tamaño final en píxeles = pulgadas × dpi = 500 × 400 px, que es
+        # aproximadamente lo que cabe en el panel derecho de la ventana.
         fig, ax = plt.subplots(figsize=(5, 4), dpi=100)
 
         if vertical:
             # axvline dibuja una línea vertical en x = x1.
+            # ax.axvline(x) dibuja una línea VERTICAL infinita en la posición x del eje X
+            # (hermana de ax.axhline(y), que dibuja una HORIZONTAL). Se usa aquí porque una
+            # recta vertical no se puede escribir como y = f(x), así que no se puede
+            # calcular con una lista de valores: se dibuja directamente.
             ax.axvline(x1, color="#2E7D32", linewidth=2, label=f"x = {n(x1)}")
             # Para vertical hay que fijar el rango Y manualmente.
             ax.set_ylim(min(refs_y) - pad_y, max(refs_y) + pad_y)
         else:
             # linspace crea 200 valores de x igualmente espaciados; con ellos
             # se calcula y = m·x + b para toda la recta (NumPy opera en bloque).
+            # ===== CÓMO SE DIBUJA UNA CURVA EN COMPUTADORA =====
+            # Matplotlib no sabe dibujar "la función y = m·x + b" en forma continua; solo
+            # une puntos con segmentos pequeños. Por eso:
+            #   1) np.linspace crea 200 valores de x entre x_min y x_max, equidistantes.
+            #   2) La expresión  m * x + b  se evalúa en los 200 valores a la vez
+            #      (vectorización) y produce 200 valores de y.
+            #   3) ax.plot(x, y) une los 200 puntos (x_i, y_i) con segmentos.
+            # Para una recta bastarían 2 puntos; con 200 se usa el mismo código que la
+            # parábola, donde sí se necesitan muchos puntos para que se vea suave.
             x = np.linspace(x_min, x_max, 200)
             ax.plot(x, m * x + b, color="#2E7D32", linewidth=2,
                     label=self._texto_poli([(m, 'x'), (b, '')]))
+            # Marca la intersección con el eje Y. Se sabe que está en (0, b) porque al
+            # evaluar y = m·0 + b se obtiene b. 'go' = punto verde (g=green, o=círculo).
             ax.plot(0, b, 'go', label=f"Int. Y (0, {n(b)})")                  # Punto intersección Y
             if raiz is not None:
                 ax.plot(raiz, 0, 'ro', label=f"Raíz ({n(raiz)}, 0)")          # Punto de la raíz
         # Se fijan los límites del eje X.
+        # set_xlim fija el rango visible del eje X. Si no se llamara, Matplotlib
+        # calcularía los límites solo a partir de los datos dibujados ("autoscale").
+        # (En la recta vertical el eje Y se fijó antes con set_ylim por la misma razón.)
         ax.set_xlim(x_min, x_max)
 
         # Dibuja los puntos A y B con sus coordenadas.
         self._marcar_puntos(ax, [(x1, y1), (x2, y2)], ["A", "B"])
 
+        # Dibujar axhline(0) y axvline(0) en negro marca los EJES cartesianos
+        # (la recta y = 0 es el eje X y la recta x = 0 es el eje Y). Matplotlib por sí
+        # solo solo dibuja el marco de la gráfica, no los ejes que cruzan por el origen.
         ax.axhline(0, color='black', linewidth=1) # Eje X
         ax.axvline(0, color='black', linewidth=1) # Eje Y
+        # grid(True) activa la cuadrícula en las marcas de los ejes; linestyle='--' la
+        # hace de líneas discontinuas; alpha=0.6 es la opacidad (0 = invisible,
+        # 1 = sólida) para que no tape la gráfica.
         ax.grid(True, linestyle='--', alpha=0.6)   # Cuadrícula de fondo
         ax.set_title("Gráfica de la Ecuación Lineal", fontsize=12, fontweight='bold', color="#1E4620")
         ax.set_xlabel("Eje X")
         ax.set_ylabel("Eje Y")
         # Leyenda con las "label" de cada elemento dibujado.
+        # legend() arma el recuadro de leyenda automáticamente: recorre todo lo
+        # dibujado que tenga "label" y muestra su símbolo junto con ese texto.
         ax.legend(fontsize=8)
 
         # Incrusta la figura en el panel de Tkinter:
         # 1) Se crea el canvas que envuelve la figura.
+        # ===== DE MATPLOTLIB A TKINTER =====
+        # Hasta aquí "fig" es solo una descripción de la gráfica en memoria. Los pasos:
+        #   FigureCanvasTkAgg(fig, master=panel) -> crea el "lienzo" que sabe pintar
+        #       la figura y que pertenece al panel (master) de Tkinter.
+        #   canvas.draw()                        -> renderiza la figura a píxeles.
+        #   canvas.get_tk_widget()               -> obtiene el widget real de Tkinter...
+        #   .pack(expand=True, fill="both")      -> ...y lo coloca llenando todo el panel.
         canvas = FigureCanvasTkAgg(fig, master=self.frame_grafica_1ro)
         # 2) draw() renderiza la figura.
         canvas.draw()
@@ -511,6 +618,10 @@ class MenuPrincipal:
 
         # Cierra la figura en pyplot para liberar memoria (el canvas sigue
         # mostrándola; solo se evita acumular figuras abiertas).
+        # pyplot guarda en una lista global TODAS las figuras que se crean con
+        # plt.subplots()/plt.figure(). Si no se cierran, se acumulan en memoria cada
+        # vez que se presiona "Graficar" (y Matplotlib avisa después de 20 figuras).
+        # plt.close(fig) la saca de esa lista; el canvas ya incrustado sigue mostrándola.
         plt.close(fig)
 
 
@@ -610,10 +721,34 @@ class MenuPrincipal:
         # Cada punto cumple y = a·x² + b·x + c  ->  sistema 3x3 para encontrar a, b, c
         # Matriz A: cada fila es [x², x, 1] de un punto. Resolver A·[a,b,c] = ys
         # da los coeficientes de la parábola (interpolación).
+        # ===== MATEMÁTICA: PARÁBOLA QUE PASA POR 3 PUNTOS =====
+        # Se busca y = a·x² + b·x + c. Las incógnitas son a, b y c (3 números), y cada
+        # punto (xi, yi) aporta UNA ecuación al sustituir en la fórmula:
+        #     a·x1² + b·x1 + c = y1
+        #     a·x2² + b·x2 + c = y2
+        #     a·x3² + b·x3 + c = y3
+        # Son 3 ecuaciones LINEALES en a, b, c (los x² son números conocidos). En forma
+        # de matriz:   [ x1²  x1  1 ]   [a]   [y1]
+        #              [ x2²  x2  1 ] · [b] = [y2]        es decir   A · v = y
+        #              [ x3²  x3  1 ]   [c]   [y3]
+        # Cada fila de A se arma con la comprensión [x**2, x, 1.0] para cada x de xs.
+        # Se usa 1.0 (float) para que toda la matriz sea de decimales.
+        # Esta matriz se llama "de Vandermonde": su determinante es distinto de 0
+        # solo si los tres x son DIFERENTES (por eso se exige antes x distintos).
         A = np.array([[x**2, x, 1.0] for x in xs])
+        # np.linalg.solve(A, y) resuelve A·v = y. Internamente usa eliminación
+        # gaussiana (descomposición LU): convierte la matriz en una triangular y
+        # despeja de abajo hacia arriba. Es más preciso y rápido que calcular la
+        # inversa de A. Devuelve un arreglo [a, b, c] que aquí se desempaqueta.
+        # Ejemplo con (-1,0), (0,-3), (3,0):  a=1, b=-2, c=-3  ->  y = x² - 2x - 3.
         a, b, c = np.linalg.solve(A, np.array(ys))
 
         # Si a ≈ 0 los 3 puntos son colineales: es una recta, no una parábola.
+        # Si los tres puntos están sobre una misma recta, la solución del sistema da
+        # a = 0 (el término x² desaparece) y la "parábola" es en realidad una recta.
+        # atol=1e-9 es la tolerancia absoluta: valores menores a 0.000000001 cuentan
+        # como cero (los errores de redondeo pueden dejar a = 1e-16 en vez de 0).
+        # Además, a = 0 rompería las fórmulas de abajo (dividen entre 2a).
         if np.isclose(a, 0, atol=1e-9):
             messagebox.showerror("Error matemático",
                                 "Los 3 puntos están alineados: forman una recta, no una parábola.\n"
@@ -622,13 +757,30 @@ class MenuPrincipal:
 
         n = self._num
         # Discriminante Δ = b² - 4ac: indica cuántas raíces reales hay.
+        # ===== MATEMÁTICA: DISCRIMINANTE Y RAÍCES =====
+        # Las raíces son los x donde y = 0:  a·x² + b·x + c = 0. Completando el
+        # cuadrado se llega a la fórmula general:
+        #           x = ( -b ± √(b² - 4ac) ) / (2a)
+        # La parte bajo la raíz es el DISCRIMINANTE  Δ = b² - 4ac  y decide cuántas
+        # raíces REALES (cruces con el eje X) hay:
+        #     Δ > 0 -> dos raíces reales distintas (la parábola cruza el eje X 2 veces)
+        #     Δ = 0 -> una raíz real doble (la parábola solo TOCA el eje X en el vértice)
+        #     Δ < 0 -> ninguna real (la parábola no toca el eje X); son complejas.
         discriminante = b**2 - 4*a*c
 
         # Vértice: x = -b/(2a); su y se obtiene evaluando la parábola en ese x.
+        # ===== MATEMÁTICA: VÉRTICE =====
+        # El vértice es el punto más alto (si a < 0) o más bajo (si a > 0). Como la
+        # parábola es simétrica, su eje pasa justo a la mitad entre las dos raíces:
+        #     (x1 + x2)/2 = ( (-b+√Δ) + (-b-√Δ) ) / (4a) = -b / (2a)
+        # (también sale al derivar y' = 2a·x + b = 0). Esa es la coordenada H del
+        # vértice; la K se obtiene evaluando la parábola en ese x (sustituyendo).
         vx = -b / (2 * a)
         vy = a * (vx**2) + b * vx + c
 
         # Según el signo del discriminante hay tres casos:
+        # Se usa isclose y no "== 0" porque Δ sale de operaciones con decimales y casi
+        # nunca da exactamente 0 aunque matemáticamente lo sea.
         if np.isclose(discriminante, 0):
             # Δ = 0: una sola raíz (repetida), que coincide con el vértice.
             x1 = -b / (2 * a)
@@ -642,6 +794,14 @@ class MenuPrincipal:
             puntos_raices = [(x1, 0), (x2, 0)]
         else:
             # Δ < 0: raíces complejas conjugadas (parte real ± parte imaginaria).
+            # Con Δ < 0 aparece la raíz de un número negativo: √Δ = i·√|Δ|, donde i es la
+            # unidad imaginaria (i² = -1). La fórmula general queda:
+            #     x = -b/(2a)  ±  i · √|Δ| / (2a)
+            # -> parte real = -b/(2a)  (justo la coordenada H del vértice);
+            # -> parte imaginaria = √|Δ| / (2|a|). Se usa |a| porque el signo "±" ya
+            #    contempla ambos signos, y así el valor mostrado es siempre positivo.
+            # Son un par de números complejos conjugados y no se pueden ubicar en el eje
+            # X real, por eso en este caso no se dibujan puntos de raíces.
             parte_real = -b / (2 * a)
             parte_imag = np.sqrt(abs(discriminante)) / (2 * abs(a))
             texto_raices = (f"Raíces (Complejas/Imaginarias):\n"
@@ -669,15 +829,25 @@ class MenuPrincipal:
 
         # Rango de la gráfica: que se vean los puntos, el vértice, el origen y las raíces
         # Se juntan todas las coordenadas X importantes para definir el ancho.
+        # Ventana horizontal: debe mostrar los 3 puntos, el vértice, el eje Y (x=0) y
+        # las raíces. (Mismo método de margen que en la recta; el eje Y aquí lo calcula
+        # Matplotlib solo, según los valores de la curva que se dibuje.)
         refs_x = xs + [vx, 0] + [p[0] for p in puntos_raices]
         pad_x = max(2, 0.3 * (max(refs_x) - min(refs_x)))
         # 300 valores de x para una curva suave; y se calcula con la fórmula
         # (NumPy aplica la operación a todo el arreglo a la vez).
+        # Se crean 300 valores de x. La línea siguiente aplica la fórmula a todo el
+        # arreglo: x**2 eleva al cuadrado CADA elemento (operación elemento a
+        # elemento, no multiplicación de matrices), b * x multiplica cada elemento por
+        # b, y c se suma a todos. Resultado: 300 valores de y.
+        # Más puntos = curva más suave (con pocos se vería "quebrada" en la punta).
         x = np.linspace(min(refs_x) - pad_x, max(refs_x) + pad_x, 300)
         y = a * (x**2) + b * x + c
 
         fig, ax = plt.subplots(figsize=(5, 4), dpi=100)
         # Dibuja la parábola.
+        # Une los 300 puntos (x_i, y_i) con segmentos muy cortos: a esa escala el ojo
+        # ve una curva continua. linewidth = grosor de la línea en puntos.
         ax.plot(x, y, color="#2E7D32", linewidth=2, label=ecuacion)
 
         # Ejes, cuadrícula, título y etiquetas.
@@ -692,11 +862,18 @@ class MenuPrincipal:
         self._marcar_puntos(ax, puntos, ["A", "B", "C"])
 
         # Vértice: rombo morado ('D' = diamante).
+        # Marca el vértice. 'D' es el marcador "diamante/rombo"; color="#8E24AA" lo
+        # pinta de morado (se puede combinar la forma con un color hexadecimal).
         ax.plot(vx, vy, 'D', color="#8E24AA", label=f"Vértice ({n(vx)}, {n(vy)})")
         # Intersección con el eje Y: punto verde en (0, c).
+        # Intersección con el eje Y: ocurre en x = 0, y al sustituir en y = ax² + bx + c
+        # todos los términos con x desaparecen y queda y = c. Por eso el punto es (0, c).
         ax.plot(0, c, 'go', label=f"Int. Y (0, {n(c)})")
 
         # Raíces: puntos rojos sobre el eje X (solo la primera lleva etiqueta).
+        # Dibuja cada raíz como punto rojo sobre el eje X (su y es 0). enumerate da el
+        # índice i para ponerle etiqueta de leyenda solo a la primera raíz y no repetirla.
+        # Si la lista está vacía (Δ < 0) este ciclo simplemente no hace nada.
         for i, (px, py) in enumerate(puntos_raices):
             ax.plot(px, py, 'ro', label="Raíces (Int. X)" if i == 0 else None)
 
@@ -892,12 +1069,26 @@ class MenuPrincipal:
 
         # Forma matricial A·[x, y] = B:
         # A = matriz de coeficientes, B = vector de términos independientes.
+        # ===== MATEMÁTICA: SISTEMA 2x2 EN FORMA MATRICIAL =====
+        # Dos rectas:   a1·x + b1·y = c1
+        #               a2·x + b2·y = c2
+        # Se escribe como  A · [x, y] = B  con
+        #     A = [[a1, b1],     (matriz de coeficientes)
+        #          [a2, b2]]
+        #     B = [c1, c2]       (términos independientes)
+        # GEOMÉTRICAMENTE: la solución es el punto donde se cruzan las dos rectas.
+        # np.array([[...], [...]]) crea una matriz (arreglo 2D): cada lista interior
+        # es una fila.
         A = np.array([[a1, b1], 
                     [a2, b2]])
         B = np.array([c1, c2])
 
         # Determinante: si es 0, las rectas son paralelas o coincidentes y no
         # hay una solución única. isclose evita errores por decimales.
+        # Para 2x2 el determinante es  det = a1·b2 - a2·b1. Vale 0 exactamente cuando
+        # las rectas tienen la misma pendiente (a1/b1 = a2/b2), es decir, son
+        # PARALELAS (sin solución) o COINCIDENTES (infinitas soluciones). En ambos
+        # casos NO hay un único punto de cruce y no se puede resolver con solve.
         determinante = np.linalg.det(A)
 
         if np.isclose(determinante, 0):
@@ -905,6 +1096,9 @@ class MenuPrincipal:
             solucion_existe = False
         else:
             # linalg.solve resuelve el sistema y devuelve [x, y].
+            # solve usa eliminación gaussiana y devuelve [x, y]. Equivale a la regla de
+            # Cramer:   x = (c1·b2 - c2·b1) / det     y     y = (a1·c2 - a2·c1) / det
+            # Con las rectas por defecto (x+y=5 y x-y=1): det = -2, x = 3, y = 2.
             sol_x, sol_y = np.linalg.solve(A, B)
             texto_valores = (
                 f"--- VALORES CLAVE ---\n"
@@ -922,6 +1116,9 @@ class MenuPrincipal:
 
         # La gráfica se centra en la solución (±10 unidades en X); si no hay
         # solución se centra en 0. Se generan 100 valores de x.
+        # La gráfica se "enfoca" alrededor de la solución: 10 unidades a cada lado en
+        # X, para que el cruce quede al centro. x_vals (100 puntos) es el muestreo
+        # con el que se evaluarán ambas rectas.
         centro_x = sol_x if solucion_existe else 0
         x_vals = np.linspace(centro_x - 10, centro_x + 10, 100)
 
@@ -929,12 +1126,19 @@ class MenuPrincipal:
 
         
         # Recta 1: si b1 ≠ 0 se despeja y = (c1 - a1·x) / b1 y se dibuja.
+        # DESPEJE PARA GRAFICAR: Matplotlib necesita pares (x, y). De  a·x + b·y = c  se
+        # despeja la y:       b·y = c - a·x      ->      y = (c - a·x) / b
+        # y se evalúa en todos los x_vals a la vez (vectorización). Solo se puede
+        # dividir entre b si b ≠ 0; si b = 0 queda  a·x = c, una recta VERTICAL en
+        # x = c/a (que no tiene "y = ..." y se dibuja con axvline).
         if b1 != 0:
             y_vals1 = (c1 - a1 * x_vals) / b1
             ax.plot(x_vals, y_vals1, color="#1B5E20", linewidth=2, label=f"{self._num(a1)}x + {self._num(b1)}y = {self._num(c1)}")
         else:
             # Si b1 = 0 queda a1·x = c1 → recta vertical en x = c1/a1
             # (a1 ≠ 0 está garantizado por la validación anterior).
+            # Línea vertical punteada (linestyle="--") en x = c1/a1. Aquí a1 ≠ 0 siempre,
+            # porque antes se validó que a y b no fueran 0 a la vez.
             ax.axvline(c1 / a1, color="#1B5E20", linewidth=2, linestyle="--", label=f"{self._num(a1)}x = {self._num(c1)}")
 
         # Recta 2: misma lógica, en naranja.
@@ -946,6 +1150,8 @@ class MenuPrincipal:
 
         # Marca el punto de intersección en rojo, si existe.
         if solucion_existe:
+            # Punto rojo en la intersección. Se dibuja DESPUÉS de las rectas para que quede
+            # encima de ellas.
             ax.plot(sol_x, sol_y, 'ro', markersize=8, label=f"Intersección ({sol_x:.1f}, {sol_y:.1f})")
 
         # Ejes, cuadrícula, títulos y leyenda.
@@ -955,6 +1161,8 @@ class MenuPrincipal:
         ax.set_title("Intersección de Rectas (Sistema 2x2)", fontsize=12, fontweight='bold', color="#1E4620")
         ax.set_xlabel("Eje X")
         ax.set_ylabel("Eje Y")
+        # Aquí la leyenda usa el tamaño de letra por defecto; muestra las 2 ecuaciones
+        # y el punto de intersección (cada uno con su label).
         ax.legend()
 
         # Incrustar en Tkinter.
@@ -1142,11 +1350,27 @@ class MenuPrincipal:
             # Caso normal: se despeja z = (d - a·x - b·y) / c.
             # meshgrid convierte los rangos 1D en dos mallas 2D (todas las
             # combinaciones x,y) para poder calcular Z en cada punto.
+            # ===== MATEMÁTICA Y TÉCNICA: CÓMO SE DIBUJA UN PLANO EN 3D =====
+            # Un plano  a·x + b·y + c·z = d  es una SUPERFICIE: para cada pareja (x, y)
+            # existe un z. Para dibujarlo se calcula z sobre una cuadrícula de parejas.
+            # np.meshgrid(x_rango, y_rango) crea las cuadrículas: si
+            #     x_rango = [1, 2, 3]   y   y_rango = [10, 20]
+            # devuelve dos matrices de 2 filas × 3 columnas:
+            #     X = [[1, 2, 3],        Y = [[10, 10, 10],
+            #          [1, 2, 3]]             [20, 20, 20]]
+            # Así (X[i][j], Y[i][j]) recorre TODAS las combinaciones de x e y. Con 20×20
+            # puntos se obtienen 400 parejas por plano.
+            # Despejando z de la ecuación del plano:   z = (d - a·x - b·y) / c
+            # La operación se aplica a toda la malla a la vez (vectorizada) y da una
+            # matriz Z del mismo tamaño que X e Y. Se requiere c ≠ 0 para dividir.
             X, Y = np.meshgrid(x_rango, y_rango)
             Z = (d - a * X - b * Y) / c
         elif b != 0:
             # Si c = 0 (plano "vertical") y b ≠ 0: se despeja y = (d - a·x) / b,
             # y la malla se arma con x y z.
+            # Si c = 0 el plano no depende de z (es "vertical", como una pared) y no se
+            # puede despejar z. Entonces se despeja y:   a·x + b·y = d  ->  y = (d - a·x)/b
+            # y la malla se construye con las variables libres x y z.
             X, Z = np.meshgrid(x_rango, z_rango)
             Y = (d - a * X) / b
         else:
@@ -1154,9 +1378,16 @@ class MenuPrincipal:
             # garantizado por la validación). Malla con y y z; full_like crea un
             # arreglo del mismo tamaño que Y relleno con el valor d/a.
             Y, Z = np.meshgrid(y_rango, z_rango)
+            # Si b = c = 0 solo queda  a·x = d  ->  x = d/a: un plano donde x es siempre
+            # la misma constante. np.full_like(Y, d/a) crea una matriz con la forma de Y
+            # pero llena con ese valor; las variables libres son y y z.
             X = np.full_like(Y, d / a)
         # plot_surface dibuja la superficie; alpha=0.5 la hace semitransparente
         # para ver cómo se cruzan los planos.
+        # plot_surface(X, Y, Z) recibe tres matrices del mismo tamaño y las interpreta
+        # como una malla de puntos 3D; une los vecinos formando pequeños cuadriláteros
+        # (parches) y los rellena de color. alpha=0.5 -> 50% transparente, para ver
+        # los otros planos a través de éste y notar dónde se intersectan.
         ax.plot_surface(X, Y, Z, alpha=0.5, color=color)
 
 
@@ -1182,6 +1413,15 @@ class MenuPrincipal:
 
         # 2. Configurar matrices con NumPy
         # A = matriz 3x3 de coeficientes; B = vector de términos independientes.
+        # ===== MATEMÁTICA: SISTEMA 3x3 =====
+        # Cada ecuación a·x + b·y + c·z = d es un PLANO en el espacio, y el vector
+        # (a, b, c) es su "normal" (la dirección perpendicular al plano). El sistema
+        # se escribe como  A · [x, y, z] = B  con una fila de A por ecuación.
+        # GEOMÉTRICAMENTE: la solución es el punto donde se cortan los 3 planos.
+        # El determinante de una matriz 3x3 equivale al producto triple de las tres
+        # normales (el volumen del paralelepípedo que forman). Si es 0, las normales
+        # son "coplanares" (dependientes), y los planos son paralelos o se cortan en
+        # una recta o en nada: no hay un único punto. np.isclose(det, 0) lo detecta.
         A = np.array([[a1, b1, c1],
                     [a2, b2, c2],
                     [a3, b3, c3]])
@@ -1196,6 +1436,9 @@ class MenuPrincipal:
             solucion_existe = False
         else:
             # Solución única: se resuelve A·[x, y, z] = B.
+            # Eliminación gaussiana sobre una matriz 3x3. Devuelve [x, y, z].
+            # Con los valores por defecto el sistema da (x, y, z) = (5, 3, -2)
+            # (se puede verificar sustituyendo esos valores en las 3 ecuaciones).
             sol_x, sol_y, sol_z = np.linalg.solve(A, B)
             texto_valores = (
                 f"--- VALORES CLAVE ---\n"
@@ -1221,13 +1464,22 @@ class MenuPrincipal:
 
         # Rangos de ±5 unidades alrededor del centro, con 20 puntos por eje
         # (malla de 20x20 por plano).
+        # Los 3 rangos (x, y, z) abarcan ±5 unidades alrededor del punto de solución,
+        # con 20 muestras cada uno. Con menos muestras los planos se ven "facetados";
+        # con más, la gráfica se vuelve lenta de dibujar y de rotar.
         x_rango = np.linspace(centro_x - 5, centro_x + 5, 20)
         y_rango = np.linspace(centro_y - 5, centro_y + 5, 20)
         z_rango = np.linspace(centro_z - 5, centro_z + 5, 20)
 
         # Inicializamos la figura de Matplotlib indicando explícitamente que es proyección 3D
         # (111 = 1 fila, 1 columna, subgráfica número 1).
+        # Aquí se usa plt.figure() (solo el lienzo, sin ejes) en lugar de
+        # plt.subplots(), porque el eje 3D se debe crear aparte indicando la proyección.
         fig = plt.figure(figsize=(5, 4), dpi=100)
+        # add_subplot(111) agrega un Axes a la figura. "111" significa una cuadrícula
+        # de 1 fila × 1 columna y se elige la subgráfica 1 (o sea, la única).
+        # projection='3d' hace que el Axes sea un Axes3D: tiene eje Z y permite
+        # plot_surface, scatter 3D y rotar la vista con el mouse.
         ax = fig.add_subplot(111, projection='3d')
 
         # Dibujamos los planos con transparencias (alpha) para que se vea dónde se cruzan
@@ -1239,6 +1491,9 @@ class MenuPrincipal:
         # Siempre se enmarca la vista (con o sin solución) para que no se estire la escala
         # Fija los límites de cada eje para que los planos muy inclinados no
         # deformen la escala de la gráfica.
+        # Los planos son infinitos y la fórmula puede producir valores enormes de z
+        # (por ejemplo si c es muy pequeño). Fijar los límites de X, Y y Z evita que
+        # la escala se estire y deje la zona de intersección diminuta.
         ax.set_xlim(centro_x - 5, centro_x + 5)
         ax.set_ylim(centro_y - 5, centro_y + 5)
         ax.set_zlim(centro_z - 5, centro_z + 5)
@@ -1247,6 +1502,9 @@ class MenuPrincipal:
         if solucion_existe:
             # scatter dibuja un punto en 3D; depthshade=False evita que se
             # atenúe según la profundidad (se vea siempre rojo intenso).
+            # scatter dibuja puntos sueltos (aquí uno solo) en el espacio: s=50 es el
+            # tamaño del marcador; depthshade=False evita que Matplotlib atenúe el color
+            # según qué tan lejos está, y así el punto siempre se ve rojo y visible.
             ax.scatter(sol_x, sol_y, sol_z, color='red', s=50, depthshade=False, label=f"Solución ({sol_x:.1f}, {sol_y:.1f}, {sol_z:.1f})")
             ax.legend(fontsize=8)
 
@@ -1257,6 +1515,9 @@ class MenuPrincipal:
         ax.set_zlabel("Eje Z")
         
         # 5. Incrustar en Tkinter
+        # Mismo mecanismo que en las gráficas 2D (ver explicación en primer grado).
+        # La figura 3D se renderiza una vez; para rotarla de forma interactiva con el
+        # mouse haría falta además una barra de herramientas o eventos de ratón.
         canvas = FigureCanvasTkAgg(fig, master=self.frame_grafica_3x3)
         canvas.draw()
         canvas.get_tk_widget().pack(expand=True, fill="both")
