@@ -234,17 +234,17 @@ class Persona5CRUDScroll:
 
         # create_text() dibuja texto directamente en el Canvas.
         self.canvas_main.create_text(
-            40,                       # Posición X.
-            35,                       # Posición Y.
-            text="PHANTOM TARGETS",   # Texto a mostrar.
+            40,                         # Posición X.
+            35,                         # Posición Y.
+            text="PHANTOM TARGETS",     # Texto a mostrar.
             fill="#FFFFFF",           # En un Canvas, "fill" es el
-                                      # color del texto (blanco).
-            font=("Impact", 38),      # Fuente y tamaño.
-            angle=6,                  # Rotación en grados
-                                      # (requiere Tk 8.6 o superior).
-            anchor="nw"               # El punto (40, 35) es la
-                                      # esquina superior izquierda
-                                      # del texto (nw = noroeste).
+                                        # color del texto (blanco).
+            font=("Impact", 38),        # Fuente y tamaño.
+            angle=6,                    # Rotación en grados
+                                        # (requiere Tk 8.6 o superior).
+            anchor="nw"                 # El punto (40, 35) es la
+                                        # esquina superior izquierda
+                                        # del texto (nw = noroeste).
         )
 
         # Subtítulo en amarillo, justo debajo del título.
@@ -294,13 +294,13 @@ class Persona5CRUDScroll:
 
         # Campo para el nombre del objetivo.
         self.entry_name = tk.Entry(
-            root,                          # Widget padre: la ventana.
-            font=("Arial", 12, "bold"),    # Fuente, tamaño y negrita.
-            bg="#FFFFFF",                  # Fondo blanco.
-            fg="#000000",                  # Color del texto (negro).
-            bd=3,                          # Grosor del borde (píxeles).
-            relief="solid"                 # Estilo del borde: línea
-                                           # sólida y plana.
+            root,                           # Widget padre: la ventana.
+            font=("Arial", 12, "bold"),     # Fuente, tamaño y negrita.
+            bg="#FFFFFF",                 # Fondo blanco.
+            fg="#000000",                 # Color del texto (negro).
+            bd=3,                           # Grosor del borde (píxeles).
+            relief="solid"                  # Estilo del borde: línea
+                                            # sólida y plana.
         )
 
         # Campo para el crimen (mismo estilo que el anterior).

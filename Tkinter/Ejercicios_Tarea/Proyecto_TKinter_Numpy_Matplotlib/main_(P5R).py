@@ -206,10 +206,10 @@ class Menu:
             new_ventana.iconphoto(False, self.icono)
 
         canvas = tk.Canvas(new_ventana, 
-                        width=600, 
-                        height=400, 
-                        bg="#000000",
-                        highlightthickness=0)
+                            width=600, 
+                            height=400, 
+                            bg="#000000",
+                            highlightthickness=0)
         canvas.pack(fill="both", expand=True)
 
         # Mitad izquierda: Dibujo en Canvas
@@ -256,9 +256,9 @@ class Menu:
                                     anchor="nw",
                                     angle=-4)
 
-        # Mitad derecha: Frame incrustado
+        ## Mitad derecha: Frame incrustado ##
         self.frame_1ro = tk.Frame(canvas, 
-                                bg="#FFFFFF", 
+                                bg="#000000", 
                                 padx=15, 
                                 pady=15)
         self.frame_1ro.pack_propagate(False)
@@ -267,7 +267,73 @@ class Menu:
                             anchor="nw", 
                             width=330, 
                             height=400)
+        
+        self.par_ordenado_1_x = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    25,                     # Posición X.
+                    125,                    # Posición Y.
+                    window=self.par_ordenado_1_x, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
 
+        self.par_ordenado_1_y = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    75,                     # Posición X.
+                    125,                    # Posición Y.
+                    window=self.par_ordenado_1_y, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
+        self.par_ordenado_2_x = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    15,                     # Posición X.
+                    200,                    # Posición Y.
+                    window=self.par_ordenado_2_x, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
+
+        self.par_ordenado_2_y = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    65,                     # Posición X.
+                    200,                    # Posición Y.
+                    window=self.par_ordenado_2_y, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )    
 
     def ventana_segundo_grado(self):
         new_ventana = tk.Toplevel()
@@ -305,16 +371,10 @@ class Menu:
                     150, 0,
                     0, 60,
                     fill="#DC0000")
-        canvas.create_text(
-                            20, 160, 
-                            text="Ecuación de\n2do Grado", 
-                            fill="#FFFFFF", 
-                            font=("Impact", 22), 
-                            anchor="nw")
 
         # Mitad derecha: Frame incrustado
         self.frame_2do = tk.Frame(canvas, 
-                                bg="#FFFFFF", 
+                                bg="#000000", 
                                 padx=15, 
                                 pady=15)
         self.frame_2do.pack_propagate(False)
@@ -323,6 +383,96 @@ class Menu:
                             anchor="nw", 
                             width=330, 
                             height=400)
+
+        canvas.create_text(
+                            140, 15, 
+                            text="Ecuación de\n2do Grado", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 17), 
+                            anchor="nw",
+                            angle=-4)
+        canvas.create_text(
+                                    10, 100, 
+                                    text="Par ordenado 1:", 
+                                    fill="#FFFFFF", 
+                                    font=("Impact", 14), 
+                                    anchor="nw",
+                                    angle=4)
+        canvas.create_text(
+                                    10, 170, 
+                                    text="Par orenado 2:", 
+                                    fill="#FFFFFF", 
+                                    font=("Impact", 14), 
+                                    anchor="nw",
+                                    angle=-4)
+
+        self.par_ordenado_1_x = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    25,                     # Posición X.
+                    125,                    # Posición Y.
+                    window=self.par_ordenado_1_x, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
+
+        self.par_ordenado_1_y = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    75,                     # Posición X.
+                    125,                    # Posición Y.
+                    window=self.par_ordenado_1_y, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
+        self.par_ordenado_2_x = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    15,                     # Posición X.
+                    200,                    # Posición Y.
+                    window=self.par_ordenado_2_x, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
+
+        self.par_ordenado_2_y = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    65,                     # Posición X.
+                    200,                    # Posición Y.
+                    window=self.par_ordenado_2_y, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )    
+
 
         
     def ventana_sistemas_ecuaciones(self):
@@ -370,7 +520,7 @@ class Menu:
 
         # Mitad derecha: Frame incrustado
         self.frame_sistemas_ecuaciones = tk.Frame(canvas, 
-                                bg="#FFFFFF", 
+                                bg="#000000", 
                                 padx=15, 
                                 pady=15)
         self.frame_sistemas_ecuaciones.pack_propagate(False)
