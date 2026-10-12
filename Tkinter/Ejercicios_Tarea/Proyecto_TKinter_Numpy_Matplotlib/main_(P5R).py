@@ -335,6 +335,14 @@ class Menu:
                     anchor="nw"            
                 )    
 
+        self.crear_boton_canvas(
+            "Procesar_primer_grado",
+            70, 
+            350,
+            "Gráficar",
+            lambda: None
+        )
+
     def ventana_segundo_grado(self):
         new_ventana = tk.Toplevel()
         new_ventana.title("Gráfica Ecuación Segundo Grado")
@@ -392,19 +400,27 @@ class Menu:
                             anchor="nw",
                             angle=-4)
         canvas.create_text(
-                                    10, 100, 
-                                    text="Par ordenado 1:", 
-                                    fill="#FFFFFF", 
-                                    font=("Impact", 14), 
-                                    anchor="nw",
-                                    angle=4)
+                            10, 80, 
+                            text="Par ordenado 1:", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 14), 
+                            anchor="nw",
+                            angle=4)
         canvas.create_text(
-                                    10, 170, 
-                                    text="Par orenado 2:", 
-                                    fill="#FFFFFF", 
-                                    font=("Impact", 14), 
-                                    anchor="nw",
-                                    angle=-4)
+                            10, 150, 
+                            text="Par orenado 2:", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 14), 
+                            anchor="nw",
+                            angle=-4)
+        canvas.create_text(
+                            10, 230, 
+                            text="Par orenado 3:", 
+                            fill="#FFFFFF", 
+                            font=("Impact", 14), 
+                            anchor="nw",
+                            angle=4)
+
 
         self.par_ordenado_1_x = tk.Entry(
                 new_ventana,                
@@ -415,8 +431,7 @@ class Menu:
                 relief="solid"
             )
         canvas.create_window(             
-                    25,                     # Posición X.
-                    125,                    # Posición Y.
+                    25, 105,                 
                     window=self.par_ordenado_1_x, 
                     width=50,              # Ancho
                     height=30,              # Alto
@@ -432,8 +447,7 @@ class Menu:
                 relief="solid"
             )
         canvas.create_window(             
-                    75,                     # Posición X.
-                    125,                    # Posición Y.
+                    75, 105,
                     window=self.par_ordenado_1_y, 
                     width=50,              # Ancho
                     height=30,              # Alto
@@ -448,8 +462,7 @@ class Menu:
                 relief="solid"
             )
         canvas.create_window(             
-                    15,                     # Posición X.
-                    200,                    # Posición Y.
+                    15, 180,                 
                     window=self.par_ordenado_2_x, 
                     width=50,              # Ancho
                     height=30,              # Alto
@@ -465,14 +478,43 @@ class Menu:
                 relief="solid"
             )
         canvas.create_window(             
-                    65,                     # Posición X.
-                    200,                    # Posición Y.
+                    65, 180, 
                     window=self.par_ordenado_2_y, 
                     width=50,              # Ancho
                     height=30,              # Alto
                     anchor="nw"            
-                )    
-
+                )
+        
+        self.par_ordenado_3_x = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    25, 255, 
+                    window=self.par_ordenado_3_x, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )               
+        self.par_ordenado_3_y = tk.Entry(
+                new_ventana,                
+                font=("Arial", 12, "bold"),
+                bg="#FFFFFF",
+                fg="#000000",
+                bd=3,
+                relief="solid"
+            )
+        canvas.create_window(             
+                    75, 255, 
+                    window=self.par_ordenado_3_y, 
+                    width=50,              # Ancho
+                    height=30,              # Alto
+                    anchor="nw"            
+                )
 
         
     def ventana_sistemas_ecuaciones(self):
@@ -492,18 +534,20 @@ class Menu:
 
         # Mitad izquierda: Dibujo en Canvas
         canvas.create_polygon(
-                    300, 50,
-                    120, 350,
-                    260, 400,
-                    300, 400,
+                    600, 0,
+                    475, 0,
+                    250, 350,
+                    450, 400,
+                    560, 400,
+                    600, 400,
                     fill="#DC0000")
         canvas.create_polygon( ## Linea blanca divisoria ##
-                    300, 50,      
-                    110, 350,     
-                    240, 400,
-                    270, 400,
-                    130, 345,
-                    300, 70,
+                    455, 0,
+                    230, 350,
+                    410, 400,
+                    450, 400,
+                    260, 342,
+                    475, 0,
                     fill="#FFFFFF"  # Blanco.
                 )
         canvas.create_polygon(
@@ -512,23 +556,12 @@ class Menu:
                     0, 60,
                     fill="#DC0000")
         canvas.create_text(
-                            20, 160, 
+                            400, 180, 
                             text="Sistemas de \necuaciones", 
                             fill="#FFFFFF", 
-                            font=("Impact", 22), 
-                            anchor="nw")
-
-        # Mitad derecha: Frame incrustado
-        self.frame_sistemas_ecuaciones = tk.Frame(canvas, 
-                                bg="#000000", 
-                                padx=15, 
-                                pady=15)
-        self.frame_sistemas_ecuaciones.pack_propagate(False)
-        canvas.create_window(270, 0, 
-                            window=self.frame_sistemas_ecuaciones, 
-                            anchor="nw", 
-                            width=330, 
-                            height=400)
+                            font=("Impact", 25), 
+                            anchor="nw",
+                            angle=10)
 
 
 
