@@ -237,27 +237,24 @@ class Menu:
                     0, 60,
                     fill="#DC0000")
         
-        canvas.create_text(
-                            140, 15, 
-                            text="Ecuación de\n1er Grado", 
-                            fill="#FFFFFF", 
-                            font=("Impact", 17), 
-                            anchor="nw",
-                            angle=-4)
-        canvas.create_text(
-                                    10, 100, 
-                                    text="Par ordenado 1:", 
-                                    fill="#FFFFFF", 
-                                    font=("Impact", 14), 
-                                    anchor="nw",
-                                    angle=4)
-        canvas.create_text(
-                                    10, 170, 
-                                    text="Par orenado 2:", 
-                                    fill="#FFFFFF", 
-                                    font=("Impact", 14), 
-                                    anchor="nw",
-                                    angle=-4)
+        canvas.create_text(140, 15, 
+                        text="Ecuación de\n1er Grado", 
+                        fill="#FFFFFF", 
+                        font=("Impact", 17), 
+                        anchor="nw",
+                        angle=-4)
+        canvas.create_text(10, 100, 
+                        text="Par ordenado 1:", 
+                        fill="#FFFFFF", 
+                        font=("Impact", 14), 
+                        anchor="nw",
+                        angle=4)
+        canvas.create_text(10, 170, 
+                        text="Par orenado 2:", 
+                        fill="#FFFFFF", 
+                        font=("Impact", 14), 
+                        anchor="nw",
+                        angle=-4)
 
         ## Mitad derecha: Frame incrustado ##
         self.frame_1ro = tk.Frame(canvas, 
@@ -578,7 +575,7 @@ class Menu:
 
 
     def procesar_ecuacion_primer_grado(self):
-        print("Esta funcionando")
+        pass
 
 
     def procesar_ecuacion_primer_grado(self):

@@ -10,6 +10,7 @@ from tkinter import messagebox        # Para mostrar mensajes de error
 import numpy as np                    # Para cálculos matemáticos
 from matplotlib.figure import Figure  # Para crear las gráficas
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg  # Para meter una gráfica dentro de una ventana de Tkinter
+import os
 
 
 class AplicacionGraficas:
@@ -33,10 +34,20 @@ class AplicacionGraficas:
         self.crear_boton(self.root, "Gráfica de primer grado\n(recta)", self.ventana_primer_grado).pack(pady=10, fill="x", padx=50)
         self.crear_boton(self.root, "Gráfica de segundo grado\n(parábola)", self.ventana_segundo_grado).pack(pady=10, fill="x", padx=50)
         self.crear_boton(self.root, "Sistemas de ecuaciones", self.ventana_sistemas).pack(pady=10, fill="x", padx=50)
+        self.crear_boton(self.root, "Triángulo Rectangulo", self.ventana_triangulos).pack(pady=10, fill="x", padx=50)
 
-    # ---------------------------------------------------------------------------
-    # FUNCIONES PEQUEÑAS DE AYUDA (MÉTODOS)
-    # ---------------------------------------------------------------------------
+
+        #### CONFIGURACIÓN DEL ICONO ####
+        # Obtiene la ruta de la carpeta actual donde está el script para cargar el logo
+        self.carpeta_proyecto = os.path.dirname(__file__)
+        self.ruta_icono = os.path.join(self.carpeta_proyecto, "logo_cecyteq.png")
+        try:
+            self.icono = tk.PhotoImage(file=self.ruta_icono)
+            self.root.iconphoto(True, self.icono)
+        except Exception as e:
+            print(f"Error al cargar el icono: {e}")
+
+
 
     def crear_boton(self, padre, texto, comando):
         """Crea un botón verde. 'comando' es la función que se ejecuta al hacer clic."""
@@ -166,10 +177,9 @@ class AplicacionGraficas:
             ax.text(x, y, f"  {letras[i]}({x:.1f}, {y:.1f})", color="blue", fontsize=8)
 
     # ---------------------------------------------------------------------------
-    # VENTANAS
+    # VENTANAS PARA EJERCICIOS
     # ---------------------------------------------------------------------------
-
-    # ============================ RECTA (PRIMER GRADO) ===========================
+    # ============================ ECUACIÓN DE PRIMER GRADO =====================
     def ventana_primer_grado(self):
         panel_izq, panel_graf = self.crear_ventana("Ecuación de primer grado", "750x520")
 
@@ -337,6 +347,18 @@ class AplicacionGraficas:
         resultado.pack(anchor="w")
         self.vincular_enter([caja_x1, caja_y1, caja_x2, caja_y2, caja_x3, caja_y3], graficar)
 
+
+    # ====================== MENÚ PARA ELEGIR 2x2 O 3x3 ===========================
+    def ventana_sistemas(self):
+        ventana = tk.Toplevel(self.root)
+        ventana.title("Sistemas de Ecuaciones")
+        ventana.geometry("400x250")
+        ventana.config(bg=self.COLOR_FONDO)
+
+        self.crear_etiqueta(ventana, "Selecciona el tipo de sistema", ("Impact", 18)).pack(pady=25)
+        self.crear_boton(ventana, "Sistemas de 2x2", self.ventana_sistema_2x2).pack(pady=8, fill="x", padx=50)
+        self.crear_boton(ventana, "Sistemas de 3x3", self.ventana_sistema_3x3).pack(pady=8, fill="x", padx=50)
+
     # ============================ SISTEMA DE 2x2 =================================
     def dibujar_recta(self, ax, a, b, c, x, color):
         """Dibuja la recta  a·x + b·y = c  sobre los ejes 'ax'."""
@@ -500,21 +522,158 @@ class AplicacionGraficas:
         resultado.pack(anchor="w")
         self.vincular_enter(fila1 + fila2 + fila3, graficar)
 
-    # ====================== MENÚ PARA ELEGIR 2x2 O 3x3 ===========================
-    def ventana_sistemas(self):
+
+    # ====================== MENÚ PARA ELEGIR TRIANGULOS ===========================
+    def ventana_triangulos(self):
         ventana = tk.Toplevel(self.root)
-        ventana.title("Sistemas de Ecuaciones")
+        ventana.title("Triangulo Rectangulo")
         ventana.geometry("400x250")
         ventana.config(bg=self.COLOR_FONDO)
 
-        self.crear_etiqueta(ventana, "Selecciona el tipo de sistema", ("Impact", 18)).pack(pady=25)
-        self.crear_boton(ventana, "Sistemas de 2x2", self.ventana_sistema_2x2).pack(pady=8, fill="x", padx=50)
-        self.crear_boton(ventana, "Sistemas de 3x3", self.ventana_sistema_3x3).pack(pady=8, fill="x", padx=50)
+        self.crear_etiqueta(ventana, "Selecciona los datos a ingresar", ("Impact", 18)).pack(pady=25)
+        self.crear_boton(ventana, "Lado y Lado", self.ventana_tri_rec_LyL).pack(pady=8, fill="x", padx=50)
+        self.crear_boton(ventana, "Lado y un Ángulo agudo", self.ventana_tri_rec_LyA).pack(pady=8, fill="x", padx=50)
+
+    # ----------------------- VENTANAS TRIANGULO RECTANGULO ---------------------------------
+    def ventana_tri_rec_LyL(self):
+        panel_izq, panel_graf = self.crear_ventana("Triangulo Rectángulo", "750x520")
+        self.crear_etiqueta(panel_izq, "Triangulo Rectángulo", ("Impact", 16)).pack(pady=5)
+        self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
+        """
+        LÓGICA DE PROGRAMACIÓN MATEMÁTICA (RECI_LyL):
+        -----------------------------------------------------------------------
+        Entradas posibles (Pedir al usuario identificar si introduce Catetos o Hipotenusa):
+        - Opción A: Cateto_a, Cateto_b
+        - Opción B: Hipotenusa_c, Cateto_a
+
+        Cálculos matemáticos:
+        SI es Opción A (Dos Catetos):
+            1. Hipotenusa: c = math.sqrt(a**2 + b**2)
+            2. Ángulo A: alpha = math.degrees(math.atan(a / b))
+            3. Ángulo B: beta = 90 - alpha
+        SI es Opción B (Hipotenusa y un Cateto):
+            1. Cateto faltante: b = math.sqrt(c**2 - a**2)
+            2. Ángulo A: alpha = math.degrees(math.asin(a / c))
+            3. Ángulo B: beta = 90 - alpha
+        
+        Nota de validación: Si es Opción B, 'c' debe ser estrictamente mayor que 'a'.
+        El tercer ángulo siempre es C = 90°.
+        """
 
 
-# ---------------------------------------------------------------------------
-# MENÚ PRINCIPAL E INICIO DEL PROGRAMA
-# ---------------------------------------------------------------------------
+    def ventana_tri_rec_LyA(self):
+        panel_izq, panel_graf = self.crear_ventana("Triangulo Rectángulo", "750x520")
+        self.crear_etiqueta(panel_izq, "Triangulo Rectángulo", ("Impact", 16)).pack(pady=5)
+        self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
+        """
+        LÓGICA DE PROGRAMACIÓN MATEMÁTICA (RECI_LyA):
+        -----------------------------------------------------------------------
+        Entradas: Un lado (l) y un Ángulo agudo (alpha, en grados).
+        El usuario debe especificar si el lado 'l' es: Hipotenusa, Cateto Opuesto o Cateto Adyacente a 'alpha'.
+
+        Cálculos matemáticos:
+        1. Ángulo faltante: beta = 90 - alpha
+        2. Lados faltantes según el tipo de lado ingresado:
+           - Si 'l' es HIPOTENUSA:
+                cat_opuesto = l * math.sin(math.radians(alpha))
+                cat_adyacente = l * math.cos(math.radians(alpha))
+           - Si 'l' es CATETO OPUESTO:
+                hipotenusa = l / math.sin(math.radians(alpha))
+                cat_adyacente = l / math.tan(math.radians(alpha))
+           - Si 'l' es CATETO ADYACENTE:
+                hipotenusa = l / math.cos(math.radians(alpha))
+                cat_opuesto = l * math.tan(math.radians(alpha))
+        """
+
+
+    # ----------------------- VENTANA TRIANGULO OBLICUÁNGULO ------------------------------
+    def ventana_tri_oblic_LLL(self):
+        panel_izq, panel_graf = self.crear_ventana("Triangulo Oblicuángulo", "750x520")
+        self.crear_etiqueta(panel_izq, "Triangulo Rectángulo", ("Impact", 16)).pack(pady=5)
+        self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
+        """
+        LÓGICA DE PROGRAMACIÓN MATEMÁTICA (OBLI_LLL):
+        -----------------------------------------------------------------------
+        Entradas: Lado a, Lado b, Lado c.
+
+        Validación inicial (Desigualdad Triangular): 
+        - El triángulo solo existe si: (a+b > c) Y (a+c > b) Y (b+c > a). Si no se cumple, lanzar error.
+
+        Cálculos matemáticos (Ley de Cosenos):
+        1. Ángulo A: cos_A = (b**2 + c**2 - a**2) / (2 * b * c)
+                     A = math.degrees(math.acos(cos_A))
+        2. Ángulo B: cos_B = (a**2 + c**2 - b**2) / (2 * a * c)
+                     B = math.degrees(math.acos(cos_B))
+        3. Ángulo C: C = 180 - A - B
+        """
+
+    def ventana_tri_oblic_LAL(self):
+        panel_izq, panel_graf = self.crear_ventana("Triangulo Oblicuángulo", "750x520")
+        self.crear_etiqueta(panel_izq, "Triangulo Rectángulo", ("Impact", 16)).pack(pady=5)
+        self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
+        """
+        LÓGICA DE PROGRAMACIÓN MATEMÁTICA (OBLI_LLL):
+        -----------------------------------------------------------------------
+        Entradas: Lado a, Lado b, Lado c.
+
+        Validación inicial (Desigualdad Triangular): 
+        - El triángulo solo existe si: (a+b > c) Y (a+c > b) Y (b+c > a). Si no se cumple, lanzar error.
+
+        Cálculos matemáticos (Ley de Cosenos):
+        1. Ángulo A: cos_A = (b**2 + c**2 - a**2) / (2 * b * c)
+                     A = math.degrees(math.acos(cos_A))
+        2. Ángulo B: cos_B = (a**2 + c**2 - b**2) / (2 * a * c)
+                     B = math.degrees(math.acos(cos_B))
+        3. Ángulo C: C = 180 - A - B
+        """
+
+    def ventana_tri_oblic_AAL(self):
+        panel_izq, panel_graf = self.crear_ventana("Triangulo Oblicuángulo", "750x520")
+        self.crear_etiqueta(panel_izq, "Triangulo Rectángulo", ("Impact", 16)).pack(pady=5)
+        self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
+        """
+        LÓGICA DE PROGRAMACIÓN MATEMÁTICA (OBLI_AAL / ALA):
+        -----------------------------------------------------------------------
+        Entradas: Ángulo A, Ángulo B, Lado conocido (ej. lado 'a').
+
+        Validación inicial: A + B debe ser estrictamente menor que 180°.
+
+        Cálculos matemáticos:
+        1. Encontrar tercer ángulo: C = 180 - A - B
+        2. Encontrar lados restantes utilizando la Ley de Senos de forma directa:
+           - Si el lado conocido de entrada era 'a':
+                b = a * math.sin(math.radians(B)) / math.sin(math.radians(A))
+                c = a * math.sin(math.radians(C)) / math.sin(math.radians(A))
+        
+        Nota de código: Mañana mapear dinámicamente las variables según cuál de los 3 lados ingrese el usuario.
+        """
+
+    def ventana_tri_oblic_LLA(self):
+        panel_izq, panel_graf = self.crear_ventana("Triangulo Oblicuángulo", "750x520")
+        self.crear_etiqueta(panel_izq, "Triangulo Rectángulo", ("Impact", 16)).pack(pady=5)
+        self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
+        """
+        LÓGICA DE PROGRAMACIÓN MATEMÁTICA (OBLI_LLA - Caso Ambiguo):
+        -----------------------------------------------------------------------
+        Entradas: Lado a, Lado b, Ángulo A (opuesto al lado a).
+
+        Cálculos matemáticos (Ley de Senos para buscar Ángulo B):
+        sin_B = (b * math.sin(math.radians(A))) / a
+
+        Validaciones críticas del Caso Ambiguo:
+        - SI sin_B > 1: El triángulo NO EXISTE (la varilla no llega al suelo). Interrumpir proceso.
+        - SI sin_B == 1 O (a >= b): Existe exactamente 1 solución matemática.
+             B = math.degrees(math.asin(sin_B))
+             C = 180 - A - B
+             c = a * math.sin(math.radians(C)) / math.sin(math.radians(A))
+        - SI sin_B < 1 Y (a < b): ¡Existen 2 soluciones posibles! (Caso doble).
+             Solución 1 (Ángulo agudo): B1 = math.degrees(math.asin(sin_B))
+             Solución 2 (Ángulo obtuso): B2 = 180 - B1
+             (Calcular C1, c1 y C2, c2 correspondientes para alertar al usuario o graficar ambos).
+        """
+
+
+# -------------- CORRER EL PROGRAMA ----------------
 if __name__ == "__main__":
     ventana_principal = tk.Tk()
     app = AplicacionGraficas(ventana_principal)

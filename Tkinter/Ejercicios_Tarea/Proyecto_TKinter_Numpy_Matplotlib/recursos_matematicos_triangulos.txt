@@ -1,0 +1,79 @@
+=============================================================================
+    RECURSOS MATEMÁTICOS PRINCIPALES: LEYES Y TEOREMAS PARA TRIÁNGULOS
+=============================================================================
+
+Este bloque sirve como referencia técnica de las leyes trigonométricas utilizadas 
+en los métodos de cálculo del programa.
+
+Nomenclatura estándar del sistema:
+- Lados en minúsculas: a, b, c
+- Ángulos opuestos en mayúsculas (o griegas): A (alpha), B (beta), C (gamma)
+  * El ángulo 'A' siempre es opuesto al lado 'a'.
+  * El ángulo 'B' siempre es opuesto al lado 'b'.
+  * El ángulo 'C' siempre es opuesto al lado 'c'.
+
+-------------------------------------------------------------------------------
+1. LEY DE LOS SENOS
+-------------------------------------------------------------------------------
+¿Cuándo se usa?: 
+- Cuando conocemos una "pareja completa" (un lado y su ángulo opuesto) más 
+  cualquier otro dato suelto (otro lado u otro ángulo). Es ideal para casos 
+  AAL, ALA y LLA.
+
+Fórmula Teórica:
+    a / sen(A) = b / sen(B) = c / sen(C)
+
+Despejes útiles para código:
+- Para buscar un LADO (ej. 'b' teniendo la pareja 'a' y 'A'):
+    b = a * (math.sin(math.radians(B)) / math.sin(math.radians(A)))
+
+- Para buscar un ÁNGULO (ej. 'B' teniendo 'b' y la pareja 'a' y 'A'):
+    sin_B = (b * math.sin(math.radians(A))) / a
+    B = math.degrees(math.asin(sin_B))
+
+-------------------------------------------------------------------------------
+2. LEY DE LOS COSENOS
+-------------------------------------------------------------------------------
+¿Cuándo se usa?: 
+- Caso LAL: Cuando tenemos dos lados y el ángulo atrapado en medio de ellos.
+- Caso LLL: Cuando tenemos los tres lados y no conocemos ningún ángulo.
+
+Fórmulas Teóricas (Variación según el lado objetivo):
+    a² = b² + c² - 2·b·c·cos(A)
+    b² = a² + c² - 2·a·c·cos(B)
+    c² = a² + b² - 2·a·b·cos(C)
+
+Despejes útiles para código:
+- Para buscar un LADO (ej. 'c' en caso LAL):
+    c = math.sqrt(a**2 + b**2 - 2 * a * b * math.cos(math.radians(C)))
+
+- Para buscar un ÁNGULO (ej. 'A' en caso LLL):
+    cos_A = (b**2 + c**2 - a**2) / (2 * b * c)
+    A = math.degrees(math.acos(cos_A))
+
+-------------------------------------------------------------------------------
+3. TEOREMA DE PITÁGORAS (Exclusivo Triángulos Rectángulos)
+-------------------------------------------------------------------------------
+¿Cuándo se usa?: 
+- Cuando el triángulo tiene un ángulo de 90° y conocemos exactamente dos lados.
+
+Fórmula Teórica (donde 'c' es la hipotenusa):
+    c² = a² + b²
+
+Despejes útiles para código:
+- Si buscamos la HIPOTENUSA ('c'):
+    c = math.sqrt(a**2 + b**2)
+- Si buscamos un CATETO ('a' o 'b'):
+    a = math.sqrt(c**2 - b**2)
+
+-------------------------------------------------------------------------------
+4. PROPIEDAD DE LA SUMA DE ÁNGULOS INTERNOS
+-------------------------------------------------------------------------------
+¿Cuándo se usa?: 
+- En cualquier triángulo del que ya conozcas dos ángulos. Es el paso más rápido.
+
+Fórmula:
+    A + B + C = 180°
+    
+Despeje en código:
+    C = 180 - A - B
