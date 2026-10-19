@@ -18,19 +18,55 @@ for fila in range(15):
             print("*", end=" ")
         else:        
             print(" ", end=" ")
-    time.sleep(0.5)
+    #time.sleep(0.5)
     print()
 
 
      
 print()
 for fila in range(10):
-    for columna in range(8):
+    for columna in range(100):
         if columna < 2:
             print("*", end=" ")
         elif columna != 0 and fila in (0,1, 4,5, 8,9) and columna <7:
             print("*", end=" ")
+        elif columna in (11,12, 13,14, 15,16) and fila in (0,1):
+            print("*", end=" ")
+        elif columna in (9, 10) and fila in (2,3):
+            print("*", end=" ")
+        elif columna in (11,12, 13,14, 15,16) and fila in (4,5):
+            print("*", end=" ")
+        elif columna in (17,18) and fila in (6,7):
+            print("*", end=" ")
+        elif columna in (11,12, 13,14, 15,16) and fila in (8,9):
+            print("*", end=" ")
+        elif columna in (21,22, 23,24, 25,26, 27,28, 29,30) and fila in (0,1):
+            print("*", end=" ")
+        elif columna in (25, 26):
+            print("*", end=" ")
+        elif columna in (33,34):
+            print("*", end=" ")
+        elif columna in (35,36, 37,38) and fila in (4,5):
+            print("*", end=" ")
+        elif columna in (39, 40):
+            print("*", end=" ")
+        elif columna in (43, 44):
+            print("*", end=" ")
+        elif columna != (43,44) and fila in (0,1, 4,5, 8,9) and columna in (45,46, 47,48, 49):
+            print("*", end=" ")
+        elif columna in (52,53):
+            print("*", end=" ")
+        elif columna in (54,55, 56,57) and fila in (0,1):
+            print("*", end=" ")
+        elif columna in (58,59) and fila in (2,3):
+            print("*", end=" ")
+        elif columna in (54,55, 56,57) and fila in (4,5):
+            print("*", end=" ")
+        elif columna in (58,59) and fila > 5:
+            print("*", end=" ")         
+
+
         else:
             print(" ", end=" ")
-    time.sleep(0.5)
+    #time.sleep(0.5)
     print()        
