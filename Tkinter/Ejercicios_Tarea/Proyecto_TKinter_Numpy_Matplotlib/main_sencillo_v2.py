@@ -605,7 +605,7 @@ class AplicacionGraficas:
         caja_b.pack(pady=4)
 
         resultado = self.crear_etiqueta(ventana, "Resultados:")
-        self.vincular_enter([caja_a, caja_b], calcular)
+
         def calcular():
             try:
                 a = self.leer_numero(caja_a)
@@ -636,6 +636,7 @@ class AplicacionGraficas:
 
         self.crear_boton(ventana, "Calcular", calcular).pack(pady=12)
         resultado.pack(pady=10)
+        self.vincular_enter([caja_a, caja_b], calcular)
 
     def ventana_tri_rec_HyC(self):
         panel_izq, panel_graf = self.crear_ventana("Triángulo Rectángulo - Hipotenusa y Cateto", "750x520")
