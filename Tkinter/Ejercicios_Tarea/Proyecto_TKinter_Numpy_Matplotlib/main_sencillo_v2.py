@@ -10,6 +10,7 @@ from tkinter import messagebox        # Para mostrar mensajes de error
 import numpy as np                    # Para cálculos matemáticos
 from matplotlib.figure import Figure  # Para crear las gráficas
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg  # Para meter una gráfica dentro de una ventana de Tkinter
+# El FigureCanvasTkAgg sirve como "puente" entre matplotlib y Tkinter, ya que convierte Figure en un widget
 import os
 import math 
 
@@ -31,6 +32,7 @@ class AplicacionGraficas:
         self.crear_etiqueta(self.root, "Gráficas y Ecuaciones", ("Impact", 22)).pack(pady=30)
 
         # Cada botón llama a la función de su ventana
+        # Se escribe sin parentesis la función para no ejecutarla ahora, sino nomás "guardarla" hasta que le piquen
         self.crear_boton(self.root, "Gráfica de primer grado\n(recta)", self.ventana_primer_grado).pack(pady=10, fill="x", padx=50)
         self.crear_boton(self.root, "Gráfica de segundo grado\n(parábola)", self.ventana_segundo_grado).pack(pady=10, fill="x", padx=50)
         self.crear_boton(self.root, "Sistemas de ecuaciones", self.ventana_sistemas).pack(pady=10, fill="x", padx=50)
@@ -39,7 +41,10 @@ class AplicacionGraficas:
 
         #### CONFIGURACIÓN DEL ICONO ####
         # Obtiene la ruta de la carpeta actual donde está el script para cargar el logo
+        # "__file__" se refiere a la ruta de este archivo
+        # dirname() se queda con la carpeta en la que esta el archivo __file__
         self.carpeta_proyecto = os.path.dirname(__file__)
+        # os.path.join sirve para unir la carpeta + archivo con el separador correcto ( "/" o "\" )
         self.ruta_icono = os.path.join(self.carpeta_proyecto, "logo_cecyteq.png")
         try:
             self.icono = tk.PhotoImage(file=self.ruta_icono)
@@ -47,10 +52,11 @@ class AplicacionGraficas:
         except Exception as e:
             print(f"Error al cargar el icono: {e}")
 
-
-
+# ========================================================
+#                      Métodos de apoyo
+# ========================================================
     def crear_boton(self, padre, texto, comando):
-        """Crea un botón verde. 'comando' es la función que se ejecuta al hacer clic."""
+    # Crea un botón verde. 'comando' es la función que se ejecuta al hacer clic.
         boton = tk.Button(padre, text=texto, command=comando,
                           font=("Helvetica", 11, "bold"),
                           bg=self.COLOR_BOTON, fg="white",
@@ -58,9 +64,10 @@ class AplicacionGraficas:
                           activeforeground="white",
                           cursor="hand2", bd=0, pady=8)
         return boton
-
+    
     def crear_etiqueta(self, padre, texto, fuente=("Helvetica", 11)):
-        """Crea un texto (Label) con los colores del programa."""
+    # Crea una Label con los colores del programa.
+        # El que este fuente=("Helvetica", 11) arriba sirve para que esos sean los valores por defecto
         return tk.Label(padre, text=texto, font=fuente, justify="left",
                         bg=self.COLOR_FONDO, fg=self.COLOR_TITULO)
 
@@ -70,100 +77,238 @@ class AplicacionGraficas:
         - panel_graf: donde se dibuja la gráfica.
         Devuelve esos dos paneles."""
         ventana = tk.Toplevel(self.root)  # Toplevel = ventana secundaria
+        # No usamos tk.Tk() porque sino tendríamos 2 programas separados.
         ventana.title(titulo)
         ventana.geometry(tamano)          # Ejemplo: "750x520" (ancho x alto)
         ventana.config(bg=self.COLOR_FONDO)
 
+        # Frame es una caja invisible para poder ordenar los widgets
         panel_izq = tk.Frame(ventana, bg=self.COLOR_FONDO, padx=15, pady=15)
+        # lo pega a la izquierda y lo extiende verticalmente  
         panel_izq.pack(side="left", fill="y")
 
+        # Crea otro Frame usando todo el espacio restante con expand y fill="both"
         panel_graf = tk.Frame(ventana, bg="white")
         panel_graf.pack(side="right", expand=True, fill="both", padx=15, pady=15)
 
         return panel_izq, panel_graf
+        # Cuando mandemos a llamar este método tendrémos que pedir panel_izq, panel_graf = self.crear_ventana()...
 
     def leer_numero(self, caja):
         """Lee el texto de una caja y lo convierte en número.
         Cambia la coma por punto, así "2,5" también funciona.
         Si el texto no es un número, float() provoca un ValueError
         (el error se atrapa después con try/except)."""
+        # .get() sirve para devolver lo que el usuario escribio como STRING
+        # .replace() cambia la , por un .  por si el usuario escribe la decimal con ,
         texto = caja.get().replace(",", ".")
         return float(texto)
 
-    def leer_fila(self, cajas):
+    def leer_valores_fila(self, cajas):
         """Lee TODAS las cajas de una lista y devuelve una lista de números."""
-        numeros = []
-        for caja in cajas:
+        numeros = []                                # Para guardar los números
+        for caja in cajas: 
             numeros.append(self.leer_numero(caja))
         return numeros
 
-    def crear_fila_punto(self, panel, letra, x_inicial, y_inicial):
-        """Crea una línea con la forma:  A ( [x] , [y] )  y devuelve las dos cajas."""
+    # Para las ecuaciones normales a gráficar
+    def crear_fila_punto(self, panel, letra, x_por_defecto, y_por_defecto):
+        """Crea una "texto" así:  A ( [x] , [y] )  y para ingresar los datos"""
+        # Creamos la fila usando Frame para así crear 2 mini-frames y que sea más facil el
+        # poder juntar las cosas como los textos y los entry
         fila = tk.Frame(panel, bg=self.COLOR_FONDO)
         fila.pack(pady=4)
 
         self.crear_etiqueta(fila, letra + " (").pack(side="left")
 
         caja_x = tk.Entry(fila, width=5, justify="center")
-        caja_x.insert(0, x_inicial)
+        caja_x.insert(0, x_por_defecto) #0 indica la posición y x_por_defecto el valor que tendrá automáticamente
         caja_x.pack(side="left")
 
         self.crear_etiqueta(fila, ",").pack(side="left")
 
         caja_y = tk.Entry(fila, width=5, justify="center")
-        caja_y.insert(0, y_inicial)
+        caja_y.insert(0, y_por_defecto)
         caja_y.pack(side="left")
 
         self.crear_etiqueta(fila, ")").pack(side="left")
 
         return caja_x, caja_y
-
+    
+    # Para las ecuaciones de los sistemas de ecuaciones
     def crear_fila_ecuacion(self, panel, textos, valores):
+            # =========================================================================
+            # crear_fila_ecuacion
+            # -------------------------------------------------------------------------
+            # OBJETIVO: dibujar UNA ecuación con cajas de texto intercaladas con texto fijo.
+            #     2x2:   [1] x + [1] y = [5]
+            #     3x3:   [1] x + [1] y + [1] z = [6]
+            #
+            # PARÁMETROS:
+            #   panel   -> el contenedor (Frame) donde se va a poner la fila.
+            #   textos  -> lista con el texto que va DESPUÉS de cada caja.
+            #              Ej. ["x +", "y ="]
+            #   valores -> lista con el número de ejemplo de cada caja (como texto).
+            #              Ej. ["1", "1", "5"]  -> esto también decide CUÁNTAS cajas se crean.
+            #
+            # EJEMPLO PASO A PASO con textos = ["x +", "y ="] y valores = ["1", "1", "5"]:
+            #   len(valores) = 3  -> el ciclo da 3 vueltas (i = 0, 1, 2)
+            #   len(textos)  = 2  -> solo hay textos para las posiciones 0 y 1
+            #
+            #   vuelta i = 0 -> crea caja con "1" -> como 0 < 2 agrega el texto textos[0] = "x +"
+            #   vuelta i = 1 -> crea caja con "1" -> como 1 < 2 agrega el texto textos[1] = "y ="
+            #   vuelta i = 2 -> crea caja con "5" -> como 2 < 2 es falso, NO agrega texto
+            #
+            #   Resultado en pantalla:  [1] x + [1] y = [5]
+            # =========================================================================
         """Crea una ecuación con cajas de texto, por ejemplo:  [1] x + [1] y = [5]"""
+        # Frame propio para esta ecuación: así todo lo que se ponga dentro con
+        # side="left" queda en UNA sola línea y no se mezcla con las otras ecuaciones.
         fila = tk.Frame(panel, bg=self.COLOR_FONDO)
         fila.pack(pady=4)
 
+        # Lista vacía donde se guardarán las cajas conforme se vayan creando.
+        # Se necesita guardarlas porque después hay que leer lo que el usuario
+        # escriba en cada una (con leer_fila) y moverse entre ellas (con vincular_enter).
         cajas = []
+
+        # range(len(valores)) genera 0, 1, 2... hasta (cantidad de valores - 1).
+        # i es el "número de vuelta" y a la vez la posición dentro de las listas.
         for i in range(len(valores)):
+            # Se crea una caja de texto nueva en cada vuelta (ancho 5, texto centrado).
             caja = tk.Entry(fila, width=5, justify="center")
+
+            # valores[i] = el valor de ejemplo que le toca a ESTA caja.
+            # insert(0, ...) lo escribe desde la posición 0 (el inicio de la caja).
             caja.insert(0, valores[i])
+
+            # side="left": se pega a la derecha de lo último que se haya puesto.
             caja.pack(side="left")
+
+            # Se guarda en la lista. Como se agrega en orden, cajas[0] es la
+            # primera caja de la izquierda, cajas[1] la segunda, etc.
             cajas.append(caja)
 
+            # Pregunta clave: ¿todavía hay un texto para esta posición?
+            #   - Sí (i es menor que la cantidad de textos): se pone el texto
+            #     justo a la derecha de la caja que acabamos de crear.
+            #   - No: estamos en la última caja, que va sin texto después.
+            # Sin este if, textos[i] en la última vuelta daría IndexError
+            # (se pediría una posición que no existe en la lista).
             if i < len(textos):
                 self.crear_etiqueta(fila, textos[i]).pack(side="left")
 
+        # Se devuelve la LISTA completa porque la cantidad de cajas cambia
+        # (3 en un sistema 2x2, 4 en uno 3x3). Después se usa así:
+        #   a1, b1, c1 = self.leer_fila(fila1)            -> lee cada caja de la lista
+        #   self.vincular_enter(fila1 + fila2, graficar)  -> une listas para el Enter
         return cajas
 
     def vincular_enter(self, lista_cajas, funcion_graficar):
+        # =========================================================================
+            # vincular_enter
+            # -------------------------------------------------------------------------
+            # OBJETIVO: que el usuario pueda llenar todo solo con el teclado.
+            #   - Enter en una caja        -> el cursor salta a la SIGUIENTE caja.
+            #   - Enter en la ÚLTIMA caja  -> se ejecuta graficar() / calcular().
+            #
+            # PARÁMETROS:
+            #   lista_cajas      -> las cajas EN EL ORDEN en que el cursor debe recorrerlas.
+            #   funcion_graficar -> la función a ejecutar al final (se manda SIN paréntesis,
+            #                       porque se manda la función misma, no su resultado).
+            #
+            # EJEMPLO con lista_cajas = [caja_a, caja_b, caja_c]  (len = 3, última posición = 2)
+            #   Enter en caja_a (indice 0): 0 < 2 -> el cursor pasa a lista_cajas[1] = caja_b
+            #   Enter en caja_b (indice 1): 1 < 2 -> el cursor pasa a lista_cajas[2] = caja_c
+            #   Enter en caja_c (indice 2): 2 < 2 es falso -> ejecuta funcion_graficar()
+            # =========================================================================
         """Hace que al presionar Enter en una caja pase a la siguiente.
         Al presionar Enter en la última caja, ejecuta la función de graficar/resolver."""
+
+        # Esta es la función que tkinter va a llamar cada vez que se presione Enter.
+        #   event  -> tkinter SIEMPRE manda un objeto "evento" con información de lo
+        #             que pasó (qué tecla, en qué widget...). Aquí no lo necesitamos,
+        #             pero hay que recibirlo o Python marcaría error por sobrar un argumento.
+        #   indice -> la posición (0, 1, 2...) de la caja donde se presionó Enter.
         def al_presionar_enter(event, indice):
+            # len(lista_cajas) - 1 es la posición de la ÚLTIMA caja.
+            # (Con 3 cajas hay 3 posiciones: 0, 1 y 2. La última es 3 - 1 = 2.)
+            # Si indice es menor, todavía quedan cajas después de esta.
             if indice < len(lista_cajas) - 1:
+                # focus_set() = "pon el cursor de escritura en este widget".
+                # Es lo mismo que si el usuario le diera clic a la siguiente caja.
                 lista_cajas[indice + 1].focus_set()
             else:
+                # Era la última caja: ya no hay a dónde saltar, así que se ejecuta
+                # la función. AQUÍ sí lleva paréntesis porque ahora sí se quiere
+                # que se ejecute en este momento.
                 funcion_graficar()
 
+        # enumerate(lista) entrega pares (posición, elemento):
+        #   (0, caja_a), (1, caja_b), (2, caja_c)...
+        # Así tenemos a la vez la caja (para conectarle el Enter) y su posición.
         for i, caja in enumerate(lista_cajas):
+            # caja.bind("<Return>", función) significa:
+            #   "cuando esta caja tenga el cursor y se presione Enter (<Return>),
+            #    llama a esta función". tkinter le pasa el evento automáticamente.
+            #
+            # lambda es una mini-función sin nombre. Se usa porque bind solo manda
+            # el evento (e), pero al_presionar_enter también necesita el indice.
+            # La lambda hace de "puente":  recibe e y llama a
+            #     al_presionar_enter(e, idx)
+            #
+            # EL TRUCO "idx=i":
+            #   Si se escribiera  lambda e: al_presionar_enter(e, i),  la lambda
+            #   no guarda el valor de i, sino la variable i. Cuando termina el for,
+            #   i vale su último valor (la última posición), y TODAS las cajas
+            #   creerían ser la última: ninguna saltaría a la siguiente.
+            #   Escribiendo idx=i, se hace una copia del valor actual de i en
+            #   ESE momento (0 para la primera caja, 1 para la segunda...), y
+            #   cada lambda conserva su propia posición.
             caja.bind("<Return>", lambda e, idx=i: al_presionar_enter(e, idx))
 
     def mostrar_figura(self, figura, panel):
         """Mete la gráfica (figura) dentro de un panel de Tkinter."""
+        # Primero destruimos las gráficas que podría llegar a haber antes, sino se amontonan
+        # para eso usamos winfo_children() que nos da la lista de todos los widgets que hay en el panel
         for widget in panel.winfo_children():
             widget.destroy()
 
+        # Aquí convertimos Figure de matplotlib en algo que Tkinter si pueda usar
         lienzo = FigureCanvasTkAgg(figura, master=panel)
-        lienzo.draw()
-        lienzo.get_tk_widget().pack(expand=True, fill="both")
+        lienzo.draw()   # lo dibujamos
+        # get_tk_widget() le da el widget a Tkinter para ahora si poder usar .pack()
+        lienzo.get_tk_widget().pack(expand=True, fill="both") 
 
     def decorar_ejes(self, ax, titulo):
         """Agrega a una gráfica 2D los ejes, la cuadrícula, los títulos y la leyenda."""
+        # "ax" (Axes) representa el área de dibujo individual dentro de la figura donde se grafican los datos.
+        # ax.axhline: Dibuja una línea horizontal continua de extremo a extremo de la gráfica.
+        # - 0: La coordenada del eje Y por donde pasa la línea (y = 0, haciendo la función del eje X visible).
+        # - color="black": Define el color de la línea.
+        # - linewidth=1: Controla el grosor de la línea en puntos.
         ax.axhline(0, color="black", linewidth=1)
+        # ax.axvline: Dibuja una línea vertical continua de extremo a extremo de la gráfica.
+        # - 0: La coordenada del eje X por donde pasa la línea (x = 0, haciendo la función del eje Y visible).
+        # - color="black": Define el color de la línea.
+        # - linewidth=1: Controla el grosor de la línea en puntos.
         ax.axvline(0, color="black", linewidth=1)
+        # ax.grid: Activa y personaliza la red o cuadrícula de fondo para facilitar la lectura de datos.
+        # - True: Muestra la cuadrícula.
+        # - linestyle="--": Cambia la línea sólida por una línea punteada o a trazos (guiones).
+        # - alpha=0.6: Ajusta el nivel de transparencia (0.0 = transparente, 1.0 = totalmente opaco; 0.6 evita que sature la gráfica).
         ax.grid(True, linestyle="--", alpha=0.6)
+        # ax.set_title: Coloca el título principal en la parte superior del área de la gráfica.
+        # - titulo: String o variable recibida con el texto del título.
+        # - fontweight="bold": Aplica formato de texto en negrita.
         ax.set_title(titulo, fontweight="bold")
+        # ax.set_xlabel: Asigna la etiqueta o texto descriptivo al eje horizontal (Eje X).
         ax.set_xlabel("Eje X")
+        # ax.set_ylabel: Asigna la etiqueta o texto descriptivo al eje vertical (Eje Y).
         ax.set_ylabel("Eje Y")
+        # ax.legend: Despliega el recuadro de la leyenda (simbología) dentro de la gráfica.
+        # - Busca automáticamente los argumentos 'label="..."' definidos en funciones anteriores como ax.plot().
+        # - fontsize=8: Define el tamaño de letra de la leyenda a 8 puntos para mantenerlo compacto.
         ax.legend(fontsize=8)
 
     def marcar_puntos(self, ax, puntos, letras):
@@ -366,7 +511,6 @@ class AplicacionGraficas:
         resultado.pack(anchor="w")
         self.vincular_enter([caja_x1, caja_y1, caja_x2, caja_y2, caja_x3, caja_y3], graficar)
 
-
     # ====================== MENÚ PARA ELEGIR 2x2 O 3x3 ===========================
     def ventana_sistemas(self):
         ventana = tk.Toplevel(self.root)
@@ -401,8 +545,8 @@ class AplicacionGraficas:
 
         def graficar():
             try:
-                a1, b1, c1 = self.leer_fila(fila1)
-                a2, b2, c2 = self.leer_fila(fila2)
+                a1, b1, c1 = self.leer_valores_fila(fila1)
+                a2, b2, c2 = self.leer_valores_fila(fila2)
             except ValueError:
                 messagebox.showerror("Error", "Escribe solo números en las cajas.")
                 return
@@ -477,9 +621,9 @@ class AplicacionGraficas:
 
         def graficar():
             try:
-                a1, b1, c1, d1 = self.leer_fila(fila1)
-                a2, b2, c2, d2 = self.leer_fila(fila2)
-                a3, b3, c3, d3 = self.leer_fila(fila3)
+                a1, b1, c1, d1 = self.leer_valores_fila(fila1)
+                a2, b2, c2, d2 = self.leer_valores_fila(fila2)
+                a3, b3, c3, d3 = self.leer_valores_fila(fila3)
             except ValueError:
                 messagebox.showerror("Error", "Escribe solo números en las cajas.")
                 return
@@ -540,7 +684,6 @@ class AplicacionGraficas:
         self.crear_boton(panel_izq, "Resolver Sistema", graficar).pack(pady=15, fill="x")
         resultado.pack(anchor="w")
         self.vincular_enter(fila1 + fila2 + fila3, graficar)
-
 
     # ====================== MENÚ PARA ELEGIR TRIANGULOS ===========================
     def ventana_triangulos(self):

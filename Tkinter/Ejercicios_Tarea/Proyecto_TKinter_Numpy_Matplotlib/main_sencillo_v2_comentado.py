@@ -184,47 +184,136 @@ class AplicacionGraficas:
         # Se devuelven las cajas porque después hay que leer lo que escriba el usuario.
         return caja_x, caja_y
 
+    # =========================================================================
+    # crear_fila_ecuacion
+    # -------------------------------------------------------------------------
+    # OBJETIVO: dibujar UNA ecuación con cajas de texto intercaladas con texto fijo.
+    #     2x2:   [1] x + [1] y = [5]
+    #     3x3:   [1] x + [1] y + [1] z = [6]
+    #
+    # PARÁMETROS:
+    #   panel   -> el contenedor (Frame) donde se va a poner la fila.
+    #   textos  -> lista con el texto que va DESPUÉS de cada caja.
+    #              Ej. ["x +", "y ="]
+    #   valores -> lista con el número de ejemplo de cada caja (como texto).
+    #              Ej. ["1", "1", "5"]  -> esto también decide CUÁNTAS cajas se crean.
+    #
+    # EJEMPLO PASO A PASO con textos = ["x +", "y ="] y valores = ["1", "1", "5"]:
+    #   len(valores) = 3  -> el ciclo da 3 vueltas (i = 0, 1, 2)
+    #   len(textos)  = 2  -> solo hay textos para las posiciones 0 y 1
+    #
+    #   vuelta i = 0 -> crea caja con "1" -> como 0 < 2 agrega el texto textos[0] = "x +"
+    #   vuelta i = 1 -> crea caja con "1" -> como 1 < 2 agrega el texto textos[1] = "y ="
+    #   vuelta i = 2 -> crea caja con "5" -> como 2 < 2 es falso, NO agrega texto
+    #
+    #   Resultado en pantalla:  [1] x + [1] y = [5]
+    # =========================================================================
     def crear_fila_ecuacion(self, panel, textos, valores):
         """Crea una ecuación con cajas de texto, por ejemplo:  [1] x + [1] y = [5]"""
-        # "valores" = números iniciales de cada caja, ej. ["1", "1", "5"]
-        # "textos"  = lo que va DESPUÉS de cada caja, ej. ["x +", "y ="]
-        # Siempre hay una caja más que textos (la última caja no lleva texto).
+        # Frame propio para esta ecuación: así todo lo que se ponga dentro con
+        # side="left" queda en UNA sola línea y no se mezcla con las otras ecuaciones.
         fila = tk.Frame(panel, bg=self.COLOR_FONDO)
         fila.pack(pady=4)
 
+        # Lista vacía donde se guardarán las cajas conforme se vayan creando.
+        # Se necesita guardarlas porque después hay que leer lo que el usuario
+        # escriba en cada una (con leer_fila) y moverse entre ellas (con vincular_enter).
         cajas = []
-        for i in range(len(valores)):             # i = 0, 1, 2... (una vuelta por caja)
-            caja = tk.Entry(fila, width=5, justify="center")
-            caja.insert(0, valores[i])
-            caja.pack(side="left")
-            cajas.append(caja)                    # guardamos la caja en la lista
 
-            # Solo ponemos texto si todavía quedan textos (la última caja no tiene)
+        # range(len(valores)) genera 0, 1, 2... hasta (cantidad de valores - 1).
+        # i es el "número de vuelta" y a la vez la posición dentro de las listas.
+        for i in range(len(valores)):
+            # Se crea una caja de texto nueva en cada vuelta (ancho 5, texto centrado).
+            caja = tk.Entry(fila, width=5, justify="center")
+
+            # valores[i] = el valor de ejemplo que le toca a ESTA caja.
+            # insert(0, ...) lo escribe desde la posición 0 (el inicio de la caja).
+            caja.insert(0, valores[i])
+
+            # side="left": se pega a la derecha de lo último que se haya puesto.
+            caja.pack(side="left")
+
+            # Se guarda en la lista. Como se agrega en orden, cajas[0] es la
+            # primera caja de la izquierda, cajas[1] la segunda, etc.
+            cajas.append(caja)
+
+            # Pregunta clave: ¿todavía hay un texto para esta posición?
+            #   - Sí (i es menor que la cantidad de textos): se pone el texto
+            #     justo a la derecha de la caja que acabamos de crear.
+            #   - No: estamos en la última caja, que va sin texto después.
+            # Sin este if, textos[i] en la última vuelta daría IndexError
+            # (se pediría una posición que no existe en la lista).
             if i < len(textos):
                 self.crear_etiqueta(fila, textos[i]).pack(side="left")
 
-        return cajas      # lista de Entry, en el orden en que aparecen
+        # Se devuelve la LISTA completa porque la cantidad de cajas cambia
+        # (3 en un sistema 2x2, 4 en uno 3x3). Después se usa así:
+        #   a1, b1, c1 = self.leer_fila(fila1)            -> lee cada caja de la lista
+        #   self.vincular_enter(fila1 + fila2, graficar)  -> une listas para el Enter
+        return cajas
 
+
+    # =========================================================================
+    # vincular_enter
+    # -------------------------------------------------------------------------
+    # OBJETIVO: que el usuario pueda llenar todo solo con el teclado.
+    #   - Enter en una caja        -> el cursor salta a la SIGUIENTE caja.
+    #   - Enter en la ÚLTIMA caja  -> se ejecuta graficar() / calcular().
+    #
+    # PARÁMETROS:
+    #   lista_cajas      -> las cajas EN EL ORDEN en que el cursor debe recorrerlas.
+    #   funcion_graficar -> la función a ejecutar al final (se manda SIN paréntesis,
+    #                       porque se manda la función misma, no su resultado).
+    #
+    # EJEMPLO con lista_cajas = [caja_a, caja_b, caja_c]  (len = 3, última posición = 2)
+    #   Enter en caja_a (indice 0): 0 < 2 -> el cursor pasa a lista_cajas[1] = caja_b
+    #   Enter en caja_b (indice 1): 1 < 2 -> el cursor pasa a lista_cajas[2] = caja_c
+    #   Enter en caja_c (indice 2): 2 < 2 es falso -> ejecuta funcion_graficar()
+    # =========================================================================
     def vincular_enter(self, lista_cajas, funcion_graficar):
         """Hace que al presionar Enter en una caja pase a la siguiente.
         Al presionar Enter en la última caja, ejecuta la función de graficar/resolver."""
-        # Función interna: recibe el evento (event, que trae info de la tecla;
-        # aquí no la usamos) y el índice de la caja donde se presionó Enter.
+
+        # Esta es la función que tkinter va a llamar cada vez que se presione Enter.
+        #   event  -> tkinter SIEMPRE manda un objeto "evento" con información de lo
+        #             que pasó (qué tecla, en qué widget...). Aquí no lo necesitamos,
+        #             pero hay que recibirlo o Python marcaría error por sobrar un argumento.
+        #   indice -> la posición (0, 1, 2...) de la caja donde se presionó Enter.
         def al_presionar_enter(event, indice):
+            # len(lista_cajas) - 1 es la posición de la ÚLTIMA caja.
+            # (Con 3 cajas hay 3 posiciones: 0, 1 y 2. La última es 3 - 1 = 2.)
+            # Si indice es menor, todavía quedan cajas después de esta.
             if indice < len(lista_cajas) - 1:
-                # No es la última caja: manda el cursor a la siguiente.
-                # focus_set() = "pon el cursor de escritura en esta caja".
+                # focus_set() = "pon el cursor de escritura en este widget".
+                # Es lo mismo que si el usuario le diera clic a la siguiente caja.
                 lista_cajas[indice + 1].focus_set()
             else:
-                # Es la última: ejecuta calcular/graficar (con paréntesis, aquí sí se ejecuta).
+                # Era la última caja: ya no hay a dónde saltar, así que se ejecuta
+                # la función. AQUÍ sí lleva paréntesis porque ahora sí se quiere
+                # que se ejecute en este momento.
                 funcion_graficar()
 
-        # enumerate() da el número (i) y la caja al mismo tiempo: (0, caja0), (1, caja1)...
+        # enumerate(lista) entrega pares (posición, elemento):
+        #   (0, caja_a), (1, caja_b), (2, caja_c)...
+        # Así tenemos a la vez la caja (para conectarle el Enter) y su posición.
         for i, caja in enumerate(lista_cajas):
-            # bind("<Return>", ...) = "cuando se presione Enter en esta caja, haz esto".
-            # lambda e, idx=i: ... es una mini-función. Se escribe "idx=i" para
-            # GUARDAR el valor actual de i; si no, todas las cajas usarían el
-            # último valor de i y el Enter se comportaría mal.
+            # caja.bind("<Return>", función) significa:
+            #   "cuando esta caja tenga el cursor y se presione Enter (<Return>),
+            #    llama a esta función". tkinter le pasa el evento automáticamente.
+            #
+            # lambda es una mini-función sin nombre. Se usa porque bind solo manda
+            # el evento (e), pero al_presionar_enter también necesita el indice.
+            # La lambda hace de "puente":  recibe e y llama a
+            #     al_presionar_enter(e, idx)
+            #
+            # EL TRUCO "idx=i":
+            #   Si se escribiera  lambda e: al_presionar_enter(e, i),  la lambda
+            #   no guarda el valor de i, sino la variable i. Cuando termina el for,
+            #   i vale su último valor (la última posición), y TODAS las cajas
+            #   creerían ser la última: ninguna saltaría a la siguiente.
+            #   Escribiendo idx=i, se hace una copia del valor actual de i en
+            #   ESE momento (0 para la primera caja, 1 para la segunda...), y
+            #   cada lambda conserva su propia posición.
             caja.bind("<Return>", lambda e, idx=i: al_presionar_enter(e, idx))
 
     def mostrar_figura(self, figura, panel):
@@ -243,15 +332,85 @@ class AplicacionGraficas:
 
     def decorar_ejes(self, ax, titulo):
         """Agrega a una gráfica 2D los ejes, la cuadrícula, los títulos y la leyenda."""
-        # "ax" (axes) = el área de dibujo dentro de la figura donde se grafica.
-        ax.axhline(0, color="black", linewidth=1)     # línea horizontal en y = 0 (eje X)
-        ax.axvline(0, color="black", linewidth=1)     # línea vertical en x = 0 (eje Y)
-        ax.grid(True, linestyle="--", alpha=0.6)      # cuadrícula punteada; alpha = transparencia
-        ax.set_title(titulo, fontweight="bold")
-        ax.set_xlabel("Eje X")
-        ax.set_ylabel("Eje Y")
-        ax.legend(fontsize=8)     # muestra los "label=" que se pusieron al graficar
 
+        # -------------------------------------------------------------------------
+        # 0. FONDO DE LA GRÁFICA (Opcional)
+        # - set_facecolor: Define el color del fondo interno.
+        #   Valores: Nombres ('white', '#FAFAFA'), HEX, o tuplas RGB.
+        # -------------------------------------------------------------------------
+        # ax.set_facecolor("#FAFAFA")
+
+        # -------------------------------------------------------------------------
+        # 1. LÍNEAS DE EJES CENTRALES (axhline y axvline)
+        # Parámetros personalizables:
+        # - color / c: 'black', 'gray', '#333333', 'navy', etc.
+        # - linestyle / ls: '-' (sólida), '--' (guiones), ':' (puntos), '-.' (guión-punto)
+        # - linewidth / lw: Grosor en puntos (ej. 0.8, 1, 1.5, 2.0)
+        # - alpha: Transparencia de 0.0 (totalmente invisible) a 1.0 (opaco)
+        # - zorder: Capa de dibujo (zorder=1 dibuja al fondo, debajo de las curvas/datos)
+        # -------------------------------------------------------------------------
+        ax.axhline(0, color="black", linestyle="-", linewidth=1, alpha=1.0, zorder=1)
+        ax.axvline(0, color="black", linestyle="-", linewidth=1, alpha=1.0, zorder=1)
+        # -------------------------------------------------------------------------
+        # 2. CUADRÍCULA (grid)
+        # Parámetros personalizables:
+        # - which: 'major' (líneas principales), 'minor' (secundarias), 'both'
+        # - axis: 'both' (ambos ejes), 'x' (solo vertical), 'y' (solo horizontal)
+        # - linestyle, linewidth, color, alpha: (mismas propiedades de línea mencionadas arriba)
+        # -------------------------------------------------------------------------
+        ax.grid(True, which="major", axis="both", linestyle="--", linewidth=0.8, color="gray", alpha=0.6)
+        # -------------------------------------------------------------------------
+        # 3. TEXTOS Y TÍTULOS (set_title, set_xlabel, set_ylabel)
+        # Parámetros personalizables para el texto:
+        # - fontsize / size: Tamaño en puntos (ej. 8, 10, 12, 14) o 'small', 'medium', 'large'
+        # - fontweight / weight: 'bold' (negrita), 'normal', 'light', 'heavy'
+        # - fontfamily / family: 'sans-serif', 'serif', 'monospace', 'Arial', 'Times New Roman'
+        # - color: Color de la tipografía ('black', '#333333', 'darkblue')
+        # - loc: Alineación del título ('center', 'left', 'right')
+        # - pad / labelpad: Distancia/separación en puntos respecto al borde de la gráfica
+        # -------------------------------------------------------------------------
+        ax.set_title(
+            titulo, 
+            fontsize=12, 
+            fontweight="bold", 
+            fontfamily="sans-serif", 
+            color="black", 
+            loc="center", 
+            pad=10
+        )
+        ax.set_xlabel("Eje X", fontsize=10, fontweight="normal", fontfamily="sans-serif", color="black", labelpad=5)
+        ax.set_ylabel("Eje Y", fontsize=10, fontweight="normal", fontfamily="sans-serif", color="black", labelpad=5)
+        # -------------------------------------------------------------------------
+        # 4. LEYENDA (legend)
+        # Parámetros personalizables:
+        # - loc: Ubicación ('best', 'upper right', 'upper left', 'lower left', 'lower right', 'center')
+        # - fontsize: Tamaño del texto de las etiquetas
+        # - frameon: True (muestra cuadro contenedor) / False (leyenda transparente sin borde)
+        # - facecolor: Color de fondo del recuadro (ej. 'white', '#F0F0F0')
+        # - edgecolor: Color de la línea del borde del recuadro
+        # - ncol / ncols: Número de columnas para organizar los elementos (ej. 1, 2, 3)
+        # - shadow: True / False (agrega sombra al recuadro)
+        # -------------------------------------------------------------------------
+        ax.legend(
+            loc="best", 
+            fontsize=8, 
+            frameon=True, 
+            facecolor="white", 
+            edgecolor="gray", 
+            ncol=1, 
+            shadow=False
+        )
+        # -------------------------------------------------------------------------
+        # 5. MARCAS Y VALORES NUMÉRICOS DE LOS EJES (tick_params)
+        # Parámetros personalizables:
+        # - axis: 'both', 'x', 'y'
+        # - labelsize: Tamaño de fuente de las marcas/números
+        # - labelcolor: Color de los números
+        # - rotation: Ángulo de inclinación de las etiquetas (ej. 0, 45, 90 grados)
+        # - direction: Dirección de las muescas ('in'=hacia adentro, 'out'=hacia afuera, 'inout')
+        # -------------------------------------------------------------------------
+        ax.tick_params(axis="both", labelsize=9, labelcolor="black", rotation=0, direction="out")
+    
     def marcar_puntos(self, ax, puntos, letras):
         """Dibuja los puntos que escribió el usuario, con su letra y coordenadas."""
         # puntos = [(x1, y1), (x2, y2)...]   letras = ["A", "B"...]
