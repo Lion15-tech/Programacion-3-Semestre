@@ -1,0 +1,56 @@
+Esther:
+1. Cambia los circulos verdes por otra figura y otro color (1 pts)
+2. Haz que en el sistema 2x2 la info la muestre en un label abajo del boton en vez de un messagebox (1 pts)
+3. Haz que la ventana de la gráfica 2x2 aparezca al lado de la ventana donde se ingresan los datos en vez de que se encime (1 pts)
+4. Haz que al momento de gráficar una ecuación de primer grado nomás deje gráficar una, o sea si le ingresas otros datos borre la gráfica anterior y aparezca la nueva (1 pts)
+
+- Agrega los botones de volver en todas las ventanas (1 pts extra)
+
+Luis Ernesto:
+1.
+2. 
+3. 
+4. 
+
+- 
+
+Elian Anaximandro:
+1.
+2. 
+3. 
+4. 
+
+- 
+
+Camila Zoe:
+1.
+2. 
+3. 
+4. 
+
+- 
+
+Gabriel:
+1.
+2. 
+3. 
+4. 
+
+- 
+
+Paolo Miguel:
+1.
+2. 
+3. 
+4. 
+
+- 
+
+Valentina:
+1.
+2. 
+3. 
+4. 
+
+- 
+
