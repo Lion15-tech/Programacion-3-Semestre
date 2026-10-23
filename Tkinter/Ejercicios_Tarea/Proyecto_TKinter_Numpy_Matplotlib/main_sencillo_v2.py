@@ -27,6 +27,7 @@ class AplicacionGraficas:
         # Configurar la ventana principal
         self.root.title("Gráficas y Ecuaciones - CECYTEQ")
         self.root.geometry("400x420")
+        # Sirve para establecer, modificar o alterar las propiedades visuales de un componente 
         self.root.config(bg=self.COLOR_FONDO)
 
         self.crear_etiqueta(self.root, "Gráficas y Ecuaciones", ("Impact", 22)).pack(pady=30)
@@ -76,6 +77,8 @@ class AplicacionGraficas:
         - panel_izq: donde van las cajas de texto, el botón y los resultados.
         - panel_graf: donde se dibuja la gráfica.
         Devuelve esos dos paneles."""
+        self.root.withdraw()
+
         ventana = tk.Toplevel(self.root)  # Toplevel = ventana secundaria
         # No usamos tk.Tk() porque sino tendríamos 2 programas separados.
         ventana.title(titulo)
@@ -313,14 +316,66 @@ class AplicacionGraficas:
 
     def marcar_puntos(self, ax, puntos, letras):
         """Dibuja los puntos que escribió el usuario, con su letra y coordenadas."""
+        # Recorre la lista de puntos mediante su índice 'i' para poder acceder
+        # simultáneamente a las coordenadas (puntos[i]) y a su etiqueta (letras[i]).
         for i in range(len(puntos)):
+            # Desempaquetado de tupla/lista: extrae las coordenadas X e Y en variables individuales.
             x, y = puntos[i]
+            # DIBUJO DE PUNTOS (ax.plot)
+            # Se usa la condición 'i == 0' para asignar el parámetro 'label' únicamente 
+            # al primer punto. Esto evita que la leyenda agregue una entrada duplicada 
+            # por cada iteración del bucle.
             if i == 0:
-                ax.plot(x, y, "bo", markersize=8, label="Puntos ingresados")
+                # - "bo": Cadena de formato rápido (fmt).
+                #         'b' = color azul (blue)
+                #         'o' = marcador en forma de círculo (circulo relleno).
+                #         (Otros marcadores útiles: 's' cuadro, '^' triángulo, '*' estrella, 'x' cruz).
+                # - markersize=8: Define el tamaño del marcador en puntos.
+                # - label="...": Texto que aparecerá en el recuadro de la leyenda.
+                ax.plot(x, y, "rs", markersize=8, label="Puntos ingresados")
             else:
-                ax.plot(x, y, "bo", markersize=8)
+                # Dibuja los puntos restantes con el mismo diseño visual, pero omitiendo 'label'
+                # para no saturar la leyenda.
+                ax.plot(x, y, "rs", markersize=8)
+            ''' Colores principales (1 letra):
+                'r' = Rojo (red)
+                'g' = Verde (green)
+                'b' = Azul (blue)
+                'k' = Negro (black)
+                'm' = Magenta
+                'y' = Amarillo (yellow)
+                'c' = Cian
+            Formas / Marcadores:
+                'o' = Círculo
+                's' = Cuadrado (square)
+                '^' = Triángulo apuntando arriba
+                'v' = Triángulo apuntando abajo
+                '*' = Estrella
+                'D' = Diamante
+                'x' / '+' = Cruces'''
+
+            # ---------------------------------------------------------------------
+            # ETIQUETAS Y TEXTO SOBRE LA GRÁFICA (ax.text)
+            # Escribe texto descriptivo directamente en la coordenada (x, y).
+            # ---------------------------------------------------------------------
+            # Parámetros explicados:
+            # - x, y: Posición matemática dentro del plano cartesiano donde se inserta el texto.
+            # - f"  {letras[i]}({x:.1f}, {y:.1f})": Formateo de cadena (f-string):
+            #     * Los espacios iniciales ("  ") actúan como un desplazamiento/offset
+            #       manual para que el texto no quede encima del punto.
+            #     * letras[i]: Inserta la letra asignada (ej. 'A', 'B', 'C').
+            #     * {x:.1f} y {y:.1f}: Muestra el número redondeado a 1 decimal (ej. 3.1416 -> 3.1).
+            # - color="blue": Color de la letra.
+            # - fontsize=8: Tamaño de fuente del texto en puntos.
+            #
+            # Nota de personalización para ax.text:
+            # Puedes sustituir los espacios manuales ("  ") controlando la alineación exacta con:
+            # - ha="left" / "center" / "right" (alineación horizontal)
+            # - va="bottom" / "center" / "top" (alineación vertical)
+            # - fontweight="bold" (texto en negrita)
             ax.text(x, y, f"  {letras[i]}({x:.1f}, {y:.1f})", color="blue", fontsize=8)
 
+    # Para los triangulos
     def crear_campo(self, panel, texto, valor_inicial):
         """Crea una etiqueta con una caja de texto debajo y devuelve la caja."""
         self.crear_etiqueta(panel, texto).pack(pady=(8, 0))
@@ -332,13 +387,19 @@ class AplicacionGraficas:
     def crear_opciones(self, panel, textos):
         """Crea botones de opción (solo se puede elegir UNO).
         Devuelve una variable: su .get() da la posición elegida (0, 1, 2...)."""
-        eleccion = tk.IntVar(value=0)
+        #IntVar es una función de Tkinter que se actualiza cuando el usuario da click
+        eleccion = tk.IntVar(value=0) # value=0 quiere decir que empieza con la primera opción
         for i in range(len(textos)):
+            # Es el circulito de elección y todos comparten la MISMA variable eleccion
             tk.Radiobutton(panel, text=textos[i], variable=eleccion, value=i,
                            bg=self.COLOR_FONDO, fg=self.COLOR_TITULO,
                            activebackground=self.COLOR_FONDO,
                            selectcolor="white", anchor="w").pack(fill="x")
         return eleccion
+
+    def volver_menu(self, ventana):
+        self.root.deiconify()
+        ventana.destroy()
 
     # ---------------------------------------------------------------------------
     #                        VENTANAS PARA EJERCICIOS
@@ -350,6 +411,7 @@ class AplicacionGraficas:
         self.crear_etiqueta(panel_izq, "Ecuación Lineal", ("Impact", 16)).pack(pady=5)
         self.crear_etiqueta(panel_izq, "Escribe 2 puntos (x, y)").pack()
 
+        # creas los entrys donde ingresar la info 
         caja_x1, caja_y1 = self.crear_fila_punto(panel_izq, "A", "0", "-4")
         caja_x2, caja_y2 = self.crear_fila_punto(panel_izq, "B", "3", "2")
 
@@ -369,23 +431,38 @@ class AplicacionGraficas:
                 messagebox.showerror("Error", "Los dos puntos son iguales. Escribe dos puntos distintos.")
                 return
 
+            # Figure: Objeto contenedor principal ("marco") de Matplotlib.
+            # - figsize=(5, 4): Ancho y alto de la figura en pulgadas.
+            # - dpi=100: "Dots Per Inch" (puntos por pulgada), controla la resolución/nitidez.
             figura = Figure(figsize=(5, 4), dpi=100)
+            # add_subplot(111): Divide la figura en una cuadrícula y crea un área de ejes (Axes).
+            # - '111' es un atajo que significa: 1 fila, 1 columna, posición 1 (ocupa todo el espacio).
+            # - "ax" es el objeto sobre el que trazaremos líneas, puntos y marcas.
             ax = figura.add_subplot(111)
 
+            # Si es una recta vertical
             if x1 == x2:
                 ax.axvline(x1, color="green", linewidth=2, label=f"x = {x1:.2f}")
+                # ax.set_xlim / set_ylim: Definen manualmente los márgenes/límites visibles de los ejes.
+                # Se añade un margen (-3 y +3) usando min/max para asegurar que tanto la recta 
+                # como el origen (0,0) y los puntos ingresados permanezcan visibles dentro del encuadre.
                 ax.set_xlim(min(x1, 0) - 3, max(x1, 0) + 3)
                 ax.set_ylim(min(y1, y2, 0) - 3, max(y1, y2, 0) + 3)
+
                 resultado.config(text=f"Recta vertical: x = {x1:.2f}\n"
                                       f"Pendiente: indefinida\n"
                                       f"Intersección X: ({x1:.2f}, 0)")
             else:
                 m = (y2 - y1) / (x2 - x1)
+                # Despejamos b para saber la ordenada al origen
                 b = y1 - m * x1
 
+                # lista_x guarda las x importantes para decidir qué parte
+                # de la recta dibujar (los puntos, el cruce con Y que está en x=0...)
                 lista_x = [x1, x2, 0]
 
                 if m != 0:
+                    # La raiz que es donde la recta cruza X 
                     raiz = -b / m
                     lista_x.append(raiz)
                     texto_raiz = f"Raíz (cruce con X): ({raiz:.2f}, 0)"
@@ -412,8 +489,11 @@ class AplicacionGraficas:
             self.marcar_puntos(ax, [(x1, y1), (x2, y2)], ["A", "B"])
             self.decorar_ejes(ax, "Gráfica de la recta")
             self.mostrar_figura(figura, panel_graf)
+            
 
         self.crear_boton(panel_izq, "Graficar", graficar).pack(pady=15, fill="x")
+
+        self.crear_boton(panel_izq, "Volver", lambda: self.volver_menu(self.ventana_primer_grado)).pack(pady=15, fill="x")
         resultado.pack(anchor="w")
         self.vincular_enter([caja_x1, caja_y1, caja_x2, caja_y2], graficar)
 
@@ -544,49 +624,52 @@ class AplicacionGraficas:
         resultado = self.crear_etiqueta(panel_izq, "Resultados:")
 
         def graficar():
-            try:
-                a1, b1, c1 = self.leer_valores_fila(fila1)
-                a2, b2, c2 = self.leer_valores_fila(fila2)
-            except ValueError:
-                messagebox.showerror("Error", "Escribe solo números en las cajas.")
-                return
+            confirmacion = messagebox.askquestion("Seguro que quieres gráficar?", "Seguro que quieres gráficar?")
+            if confirmacion == "yes":
+                
+                try:
+                    a1, b1, c1 = self.leer_valores_fila(fila1)
+                    a2, b2, c2 = self.leer_valores_fila(fila2)
+                except ValueError:
+                    messagebox.showerror("Error", "Escribe solo números en las cajas.")
+                    return
 
-            if (a1 == 0 and b1 == 0) or (a2 == 0 and b2 == 0):
-                messagebox.showerror("Error", "En cada ecuación, 'a' y 'b' no pueden ser 0 a la vez.")
-                return
+                if (a1 == 0 and b1 == 0) or (a2 == 0 and b2 == 0):
+                    messagebox.showerror("Error", "En cada ecuación, 'a' y 'b' no pueden ser 0 a la vez.")
+                    return
 
-            matriz = np.array([[a1, b1],
-                               [a2, b2]])
-            resultados = np.array([c1, c2])
+                matriz = np.array([[a1, b1],
+                                   [a2, b2]])
+                resultados = np.array([c1, c2])
 
-            determinante = np.linalg.det(matriz)
-            hay_solucion = abs(determinante) > 0.000000001
+                determinante = np.linalg.det(matriz)
+                hay_solucion = abs(determinante) > 0.000000001
 
-            if hay_solucion:
-                x_sol, y_sol = np.linalg.solve(matriz, resultados)
-                resultado.config(text=f"Determinante: {determinante:.2f}\n"
-                                      f"Punto de cruce:\n"
-                                      f"  X = {x_sol:.2f}\n"
-                                      f"  Y = {y_sol:.2f}")
-                centro = x_sol
-            else:
-                resultado.config(text="No hay solución única\n(rectas paralelas o iguales)")
-                centro = 0
+                if hay_solucion:
+                    x_sol, y_sol = np.linalg.solve(matriz, resultados)
+                    resultado.config(text=f"Determinante: {determinante:.2f}\n"
+                                          f"Punto de cruce:\n"
+                                          f"  X = {x_sol:.2f}\n"
+                                          f"  Y = {y_sol:.2f}")
+                    centro = x_sol
+                else:
+                    resultado.config(text="No hay solución única\n(rectas paralelas o iguales)")
+                    centro = 0
 
-            x = np.linspace(centro - 10, centro + 10, 100)
+                x = np.linspace(centro - 10, centro + 10, 100)
 
-            figura = Figure(figsize=(5, 4), dpi=100)
-            ax = figura.add_subplot(111)
+                figura = Figure(figsize=(5, 4), dpi=100)
+                ax = figura.add_subplot(111)
 
-            self.dibujar_recta(ax, a1, b1, c1, x, "green")
-            self.dibujar_recta(ax, a2, b2, c2, x, "orange")
+                self.dibujar_recta(ax, a1, b1, c1, x, "green")
+                self.dibujar_recta(ax, a2, b2, c2, x, "orange")
 
-            if hay_solucion:
-                ax.plot(x_sol, y_sol, "ro", markersize=8,
-                        label=f"Cruce ({x_sol:.1f}, {y_sol:.1f})")
+                if hay_solucion:
+                    ax.plot(x_sol, y_sol, "ro", markersize=8,
+                            label=f"Cruce ({x_sol:.1f}, {y_sol:.1f})")
 
-            self.decorar_ejes(ax, "Cruce de rectas (sistema 2x2)")
-            self.mostrar_figura(figura, panel_graf)
+                self.decorar_ejes(ax, "Cruce de rectas (sistema 2x2)")
+                self.mostrar_figura(figura, panel_graf)
 
         self.crear_boton(panel_izq, "Resolver y Graficar", graficar).pack(pady=15, fill="x")
         resultado.pack(anchor="w")
@@ -764,13 +847,17 @@ class AplicacionGraficas:
                 c = math.sqrt(a**2 + b**2)
                 alpha = math.degrees(math.atan(a / b))
                 beta = 90 - alpha
+                area = (a * b) / 2
+                perimtro = a + b + c
 
                 # Mostrar datos formateados a 2 decimales
                 resultado.config(
                     text=f"Hipotenusa (c): {c:.2f}\n"
                     f"Ángulo A (α): {alpha:.2f}°\n"
                     f"Ángulo B (β): {beta:.2f}°\n"
-                    f"Ángulo C (γ): 90.00°"
+                    f"Ángulo C (γ): 90.00°\n"
+                    f"Área: {area:.2f}\n"
+                    f"Perímetro: {perimtro:.2f}"
                 )
             except ValueError:
                 messagebox.showerror(

@@ -437,18 +437,66 @@ class AplicacionGraficas:
 
     def crear_opciones(self, panel, textos):
         """Crea botones de opción (solo se puede elegir UNO).
-        Devuelve una variable: su .get() da la posición elegida (0, 1, 2...)."""
-        # IntVar = variable especial de tkinter que guarda un número entero y
-        # se actualiza sola cuando el usuario hace clic. value=0 -> empieza con la 1ª opción.
+        
+        Parámetros:
+        - panel: El contenedor de Tkinter (Frame/Window) donde se dibujarán los botones.
+        - textos: Lista de strings con los títulos/opciones a mostrar.
+        
+        Retorna:
+        - eleccion: Instancia de tk.IntVar que almacena el índice seleccionado (0, 1, 2...).
+        """
+    
+        # -------------------------------------------------------------------------
+        # 1. VARIABLE DE CONTROL DE TKINTER (tk.IntVar)
+        # -------------------------------------------------------------------------
+        # Es un objeto especial de Tkinter que actúa como puente reactivo entre la
+        # interfaz gráfica (GUI) y el código en Python.
+        # - value=0: Inicializa la variable seleccionando por defecto la primera opción (índice 0).
+        # - Cuando el usuario hace clic en una opción, Tkinter actualiza automáticamente 
+        #   el valor interno de esta variable. Para leerlo más adelante se usa: eleccion.get()
         eleccion = tk.IntVar(value=0)
+    
+        # -------------------------------------------------------------------------
+        # 2. BUCLE Y CREACIÓN DE RADIOBUTTONS
+        # -------------------------------------------------------------------------
         for i in range(len(textos)):
-            # Radiobutton = circulito de selección. Todos comparten la MISMA
-            # variable (variable=eleccion), por eso solo se puede elegir uno.
-            # Cada uno tiene su propio value (i): al elegirlo, eleccion vale i.
-            tk.Radiobutton(panel, text=textos[i], variable=eleccion, value=i,
-                           bg=self.COLOR_FONDO, fg=self.COLOR_TITULO,
-                           activebackground=self.COLOR_FONDO,
-                           selectcolor="white", anchor="w").pack(fill="x")   # anchor="w" = texto pegado a la izquierda (west)
+        
+            # tk.Radiobutton: Crea un componente de botón de opción único.
+            #
+            # PARÁMETROS DE FUNCIONALIDAD:
+            # - panel: Widget padre o contenedor donde se incrusta el botón.
+            # - text=textos[i]: Texto que se despliega al lado del círculo de selección.
+            # - variable=eleccion: VÍNCULO CLAVE. Al asignar la MISMÍSIMA variable 'eleccion'
+            #   a todos los botones del bucle, Tkinter los agrupa automáticas y mutuamente:
+            #   marcar uno desmarcará todos los demás.
+            # - value=i: Es el valor entero (0, 1, 2...) que se asignará a 'eleccion' 
+            #   cuando este botón en particular sea presionado.
+            #
+            # PARÁMETROS DE ESTILO Y DISEÑO:
+            # - bg=self.COLOR_FONDO: Color de fondo del contenedor del botón en estado normal.
+            # - fg=self.COLOR_TITULO: Color del texto de la etiqueta (Foreground).
+            # - activebackground=self.COLOR_FONDO: Color de fondo cuando el mouse pasa por encima 
+            #   o cuando se hace clic (evita el parpadeo blanco/gris por defecto).
+            # - selectcolor="white": Color del fondo del círculo indicador/casilla de selección.
+            # - anchor="w": Alinea el texto dentro de su espacio. 'w' significa 'West' (Oeste/Izquierda).
+            #   Otras opciones de rosa de los vientos: 'n', 's', 'e', 'center'.
+            #
+            # ADMINISTRADOR DE GEOMETRÍA (.pack):
+            # - .pack(fill="x"): Coloca el widget verticalmente en el panel y lo estira para que
+            #   ocupe todo el ancho disponible horizontalmente ('x').
+            tk.Radiobutton(
+                panel, 
+                text=textos[i], 
+                variable=eleccion, 
+                value=i,
+                bg=self.COLOR_FONDO, 
+                fg=self.COLOR_TITULO,
+                activebackground=self.COLOR_FONDO,
+                selectcolor="white", 
+                anchor="w"
+            ).pack(fill="x")
+    
+        # Retorna la variable tk.IntVar para poder consultar la opción activa desde fuera de la función
         return eleccion
 
     # ---------------------------------------------------------------------------
@@ -582,11 +630,21 @@ class AplicacionGraficas:
     #       a·x3² + b·x3 + c = y3
     # Eso es un SISTEMA 3x3 que se resuelve con numpy (como en sistemas de ecuaciones).
     def ventana_segundo_grado(self):
+        # ---------------------------------------------------------------------
+        # 1. TAMAÑO DE LA VENTANA
+        # - Cambia "750x580" (ancho x alto) si agregas más controles o quieres
+        #   hacer el panel de la gráfica más grande.
+        # ---------------------------------------------------------------------
         panel_izq, panel_graf = self.crear_ventana("Ecuación de segundo grado", "750x580")
 
         self.crear_etiqueta(panel_izq, "Ecuación Cuadrática", ("Impact", 16)).pack(pady=5)
         self.crear_etiqueta(panel_izq, "Escribe 3 puntos (x, y)\ncon valores de X distintos").pack()
 
+        # ---------------------------------------------------------------------
+        # 2. VALORES INICIALES (EJEMPLOS POR DEFECTO)
+        # - Puedes cambiar los strings ("-1", "0", etc.) para que la ventana abra
+        #   con otros puntos precargados de inicio.
+        # ---------------------------------------------------------------------
         caja_x1, caja_y1 = self.crear_fila_punto(panel_izq, "A", "-1", "0")
         caja_x2, caja_y2 = self.crear_fila_punto(panel_izq, "B", "0", "-3")
         caja_x3, caja_y3 = self.crear_fila_punto(panel_izq, "C", "3", "0")
@@ -594,7 +652,6 @@ class AplicacionGraficas:
         resultado = self.crear_etiqueta(panel_izq, "Resultados:")
 
         def graficar():
-            # 1) LEER los 6 números (si alguno no es número -> mensaje y salir)
             try:
                 x1 = self.leer_numero(caja_x1)
                 y1 = self.leer_numero(caja_y1)
@@ -606,70 +663,52 @@ class AplicacionGraficas:
                 messagebox.showerror("Error", "Escribe solo números en las cajas.")
                 return
 
-            # 2) VALIDAR: si dos puntos tienen la misma x, una parábola no puede
-            #    pasar por ambos (sería una función con dos y para la misma x).
-            #    set() quita los repetidos: si quedan menos de 3 valores, había repetidos.
             if len(set([x1, x2, x3])) < 3:
                 messagebox.showerror("Error", "Los 3 puntos deben tener valores de X distintos.")
                 return
 
-            # 3) PLANTEAR EL SISTEMA  matriz · [a, b, c] = valores_y
-            #    Cada fila de la matriz es [x², x, 1] de un punto (los coeficientes
-            #    de a, b y c en su ecuación).
             matriz = np.array([[x1**2, x1, 1],
                                [x2**2, x2, 1],
                                [x3**2, x3, 1]])
-            # Lado derecho del sistema: las y de los 3 puntos.
             valores_y = np.array([y1, y2, y3])
-            # np.linalg.solve resuelve el sistema y devuelve los 3 valores [a, b, c].
             a, b, c = np.linalg.solve(matriz, valores_y)
 
-            # Si "a" es (casi) 0, no hay término x²: los puntos están en una
-            # recta. Se compara con un número muy pequeño y no con == 0 porque
-            # los decimales de la computadora tienen pequeños errores de redondeo.
+            # -----------------------------------------------------------------
+            # 3. TOLERANCIA DE ALINEACIÓN DE PUNTOS
+            # - '0.000000001' (1e-9) es la tolerancia para detectar si 'a' es 0.
+            #   Si 'a' es casi cero, los puntos forman una recta, no una parábola.
+            # -----------------------------------------------------------------
             if abs(a) < 0.000000001:
                 messagebox.showerror("Error", "Los 3 puntos están alineados: forman una recta, no una parábola.")
                 return
 
-            # DISCRIMINANTE: d = b² - 4ac (lo que va dentro de la raíz de la fórmula general)
-            #   d > 0 -> dos raíces reales | d = 0 -> una raíz | d < 0 -> raíces complejas
             d = b**2 - 4*a*c
-            # VÉRTICE (punto más alto o más bajo de la parábola):
-            #   x del vértice = -b / (2a);  y del vértice = se evalúa la ecuación en esa x.
-            # El "+ 0" evita que Python muestre "-0.00" (convierte -0.0 en 0.0).
             vertice_x = -b / (2*a) + 0
             vertice_y = a * vertice_x**2 + b * vertice_x + c
 
-            # RAÍCES = valores de x donde y = 0 (donde la parábola cruza el eje X).
-            # Se usa la fórmula general:  x = (-b ± √d) / (2a)
-            raices = []     # lista vacía; se llena según el caso
+            raices = []
             if abs(d) < 0.000000001:
-                # d ≈ 0: una sola raíz (la parábola solo "toca" el eje X en el vértice)
                 r = -b / (2*a)
                 raices.append(r)
                 texto_raices = f"Raíz única: X = {r:.2f}"
             elif d > 0:
-                # d > 0: dos raíces reales distintas (el "+" y el "-" de ±)
-                # np.sqrt = raíz cuadrada
                 r1 = (-b + np.sqrt(d)) / (2*a)
                 r2 = (-b - np.sqrt(d)) / (2*a)
                 raices.append(r1)
                 raices.append(r2)
-                texto_raices = f"Raíces: X1 = {r1:.2f}\n            X2 = {r2:.2f}"
+                texto_raices = f"Raíces: X1 = {r1:.2f}\n           X2 = {r2:.2f}"
             else:
-                # d < 0: la raíz de un negativo no es real -> raíces complejas
-                # de la forma  parte_real ± parte_imaginaria·i
-                # (no se grafican porque no están en el plano real; por eso
-                # "raices" se queda vacía en este caso).
                 parte_real = -b / (2*a) + 0
-                # Se usa -d (positivo) dentro de la raíz y abs(a) para que
-                # la parte imaginaria salga positiva y los signos ± se lean bien.
                 parte_imaginaria = np.sqrt(-d) / (2*abs(a))
                 texto_raices = (f"Raíces complejas:\n"
                                 f"  X1 = {parte_real:.2f} + {parte_imaginaria:.2f}i\n"
                                 f"  X2 = {parte_real:.2f} - {parte_imaginaria:.2f}i")
 
-            # Ecuación como texto para el resultado y la leyenda ({b:+.2f} = con signo)
+            # -----------------------------------------------------------------
+            # 4. FORMATO DE DECIMALES EN EL TEXTO
+            # - '{a:.2f}' formatea a 2 decimales. Si quieres 3 o 4 decimales
+            #   en el panel de resultados, cámbialo a '{a:.3f}' o '{a:.4f}'.
+            # -----------------------------------------------------------------
             ecuacion = f"y = {a:.2f}x² {b:+.2f}x {c:+.2f}"
 
             resultado.config(text=f"{ecuacion}\n"
@@ -678,30 +717,52 @@ class AplicacionGraficas:
                                   f"Cruce con Y: (0, {c:.2f})\n"
                                   f"{texto_raices}")
 
-            # Rango del eje X: abarca los 3 puntos, el vértice, el 0 y las raíces
-            # (+ une dos listas en una sola). Se agregan 2 unidades de margen.
+            # -----------------------------------------------------------------
+            # 5. MARGEN VISUAL DE LOS EJES (PADDING)
+            # - El '- 2' y '+ 2' le dan holgura a los lados. Si la parábola abre
+            #   muy ancha, puedes ampliar este rango a '- 5' y '+ 5'.
+            # -----------------------------------------------------------------
             lista_x = [x1, x2, x3, vertice_x, 0] + raices
             x_min = min(lista_x) - 2
             x_max = max(lista_x) + 2
 
-            # 200 valores de x -> más puntos que la recta para que la curva se vea suave.
+            # -----------------------------------------------------------------
+            # 6. RESOLUCIÓN DE LA CURVA (np.linspace)
+            # - '200': Cantidad de puntos evaluados. 
+            #   * Si pones 10 o 20, la parábola se verá chueca o "pico de sierra".
+            #   * Entre 100 y 500 la curva se dibuja perfectamente tersa y suave.
+            # -----------------------------------------------------------------
             x = np.linspace(x_min, x_max, 200)
-            # Se evalúa la parábola en todos los x a la vez (numpy lo permite).
             y = a * x**2 + b * x + c
 
             figura = Figure(figsize=(5, 4), dpi=100)
             ax = figura.add_subplot(111)
 
+            # -----------------------------------------------------------------
+            # 7. ESTILOS Y COLORES DE LOS ELEMENTOS DE LA GRÁFICA
+            # Modifica estos valores para personalizar los colores y marcadores:
+            # - Curva de la Parábola:
+            #     * color="green" -> "blue", "#800080" (morado), "teal", etc.
+            #     * linewidth=2   -> Grosor de la línea.
+            #     * linestyle="--" -> Opcional (hacerla punteada).
+            # - Vértice:
+            #     * "D"           -> Diamante. Cambia por "*" (estrella), "^" (triángulo), "s" (cuadrado).
+            #     * color="purple"-> Color de fondo del marcador.
+            # - Cruce Y / Raíces:
+            #     * "go" (verde círculo) y "ro" (rojo círculo).
+            # -----------------------------------------------------------------
             ax.plot(x, y, color="green", linewidth=2, label=ecuacion)
-            # "D" = marcador en forma de diamante para el vértice
-            ax.plot(vertice_x, vertice_y, "D", color="purple",
-                    label=f"Vértice ({vertice_x:.2f}, {vertice_y:.2f})")
-            # En x = 0, y vale c (por eso el cruce con Y es (0, c))
+            ax.plot(vertice_x, vertice_y, "D", color="purple", label=f"Vértice ({vertice_x:.2f}, {vertice_y:.2f})")
             ax.plot(0, c, "go", label=f"Cruce con Y (0, {c:.2f})")
+            
             if len(raices) > 0:
-                # [0] * len(raices) crea una lista de ceros del mismo tamaño que
-                # raices (todas las raíces están en y = 0).
                 ax.plot(raices, [0] * len(raices), "ro", label="Raíces")
+
+            # -----------------------------------------------------------------
+            # 8. LÍMITES EN EL EJE Y (Opcional si el vértice se sale de la vista)
+            # - Si el vértice queda muy arriba/abajo y quieres fijar la vista:
+            #   ax.set_ylim(min(y) - 2, max(y) + 2)
+            # -----------------------------------------------------------------
 
             self.marcar_puntos(ax, [(x1, y1), (x2, y2), (x3, y3)], ["A", "B", "C"])
             self.decorar_ejes(ax, "Gráfica de la parábola")
@@ -710,8 +771,7 @@ class AplicacionGraficas:
         self.crear_boton(panel_izq, "Graficar", graficar).pack(pady=15, fill="x")
         resultado.pack(anchor="w")
         self.vincular_enter([caja_x1, caja_y1, caja_x2, caja_y2, caja_x3, caja_y3], graficar)
-
-
+        
     # ====================== MENÚ PARA ELEGIR 2x2 O 3x3 ===========================
     # Esta ventana solo es un MENÚ: no calcula nada, únicamente tiene dos botones
     # que abren la ventana de sistema 2x2 o la de 3x3.
