@@ -1,0 +1,20 @@
+GRAFICADOR DE ECUACIONES - CECYTEQ
+
+Archivos del proyecto:
+- programa_principal.py: abre la ventana, el menu y conecta todas las opciones.
+- grafica_primer_grado.py: calcula y prepara los datos de y = ax + b.
+- grafica_segundo_grado.py: calcula vertices, discriminante y raices.
+- sistema_2x2.py: resuelve sistemas de dos ecuaciones con dos incognitas.
+- sistema_3x3.py: resuelve sistemas de tres ecuaciones con tres incognitas.
+- cecyteq.ico: icono usado por la ventana.
+
+REQUISITOS
+Python 3, numpy y matplotlib.
+
+INSTALACION
+1. Abre CMD dentro de esta carpeta.
+2. Escribe: pip install numpy matplotlib
+3. Ejecuta: python programa_principal.py
+
+IMPORTANTE
+Todos los archivos .py deben permanecer en la misma carpeta.
