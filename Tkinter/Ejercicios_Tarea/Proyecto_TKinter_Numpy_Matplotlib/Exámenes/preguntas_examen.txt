@@ -1,4 +1,4 @@
-Esther:
+Esther (hecho a mano):
 1. Cambia los circulos verdes por otra figura y otro color (1 pts)
 2. Haz que en el sistema 2x2 la info la muestre en un label abajo del boton en vez de un messagebox (1 pts)
 3. Haz que la ventana de la gráfica 2x2 aparezca al lado de la ventana donde se ingresan los datos en vez de que se encime (1 pts)
@@ -7,12 +7,13 @@ Esther:
 - Agrega los botones de volver en todas las ventanas (1 pts extra)
 
 Luis Ernesto:
-1.
-2. 
-3. 
-4. 
+1. Por qué decidiste que las primeras gráficas se abrieran fuera y los triangulos se incrustaran en el Tkinter? como hiciste cada una de esas dos cosas? (1 pts)
+2. Haz que la ventana principal aparezca en la esquina superior izquierda de la pantalla (1 pts)
+3. Agrega que muestre una figura de un color en el plano cartesiano donde cruza el eje X y Y (1 pts)
+4. Haz que al abrir una ventana secundaria se oculte la principal y aparezca la nueva (1 pts)
 
-- 
+- Agrega un botón de Volver en las ventanas secundarias (1 pts extra)
+- Por qué no gráficaste los sistemas de ecuaciones? Puedes crear la gráfica de el de 2x2? (2 pts extra)
 
 Elian Anaximandro:
 1.
@@ -22,35 +23,36 @@ Elian Anaximandro:
 
 - 
 
-Camila Zoe:
-1.
-2. 
-3. 
-4. 
+Camila Zoe (posible IA):
+1. Corrige en la sección de Trigonometría el que al calcular los resultados aparezcan en 
+   lineas separadas y no en una sola (1 pts)
+2. Haz que los Entry en la función entrada() sean más pequeños (1 pts)
+3. Explicame que hace cada cosa en tu función mover_siguiente() (1 pts)
+4. Crea un botón de salir en la ventana principal para cerrar todo el programa (1 pts)
 
-- 
+- crea un botón de volver que en la pestaña de ecuación de primer grado te devuelva a la pestaña principal (1 pts extra)
 
-Gabriel:
-1.
-2. 
-3. 
-4. 
+Gabriel (Hecho 100% con IA):
+1. Agrega una sola ventana/pestaña para calcular el primer triangulo rectangulo que nos pidió el profe, o sea
+   el de ingresar los 2 catetos del triangulo y sacar la hipotenusa (te la dejo con que solo me saques la hipotenusa, los angulos ahorita no son necesarios pero si los sacas +1 pts extra) (2 pts)
+2. Cambia el color de la linea de la parabola a un morado y haz que el vertice no sea un circulo morado, que sea otra figura (1 pts)
+3. Agrega un botón Salir en la ventana principal (1 pts)
 
-- 
+Paolo Miguel (100% con IA):
+1. En la sección de 'Ecuación de Primer Grado', cambia el color de la recta de azul marino a color rojo,
+   y haz que la línea sea más gruesa" (1 pts)
+2. En la función agregar_valores(), cambia el color de fondo de las tarjetas de resultados clave de blanco
+   a un tono verde claro o amarillo suave (1 pts)
+3. Explícame paso a paso cómo funciona la función crear_plano_cartesiano() y porque decidiste hacerla así y no usando matplotlib (2 pts)
 
-Paolo Miguel:
-1.
-2. 
-3. 
-4. 
+- Agrega una opción 'Salir' en el menú superior en la vista de bienvenida que permita cerrar la aplicación por completo
 
-- 
+Valentina (a mano, conmovedor después de revisar los demás):
+1. En la parte de tu ecuación de primer grado, la pendiente esta mal por la jerarquía de operaciones, corrigelo (1 pts)
+2. En la parte de tu ecuación de segundo grado, al dividir entre 0 el programa si te avisa pero no se detiene y sigue corriendolo (1 pts)
+3. Agrega un try except al ingresar los valores en la ecuación de primer grado para que no te deje intentar gráficar si no son números o esta vacio (1 pts)
+4. Cambia el color de la linea y la figura que muestra la gráfica en los puntos (1 pts)
 
-Valentina:
-1.
-2. 
-3. 
-4. 
-
-- 
+- Agrega el botón de Salir en la ventana principal (1 pts extra)
+- Evita que al abrir el programa se abra primero la ventana de Trigonometría (1 pts extra)
 
