@@ -21,7 +21,7 @@ def reset():
     if c_f: c_f.destroy()
     if cnv: cnv.get_tk_widget().destroy()
     c_f = tk.Frame(v)
-    c_f.pack(pady=10)
+    c_f.pack(pady=20)
 
 def plot(fig):
     global cnv
@@ -41,7 +41,7 @@ def p_grado():
     tk.Label(f, text="b:").grid(row=0, column=2)
     eb = tk.Entry(f, width=8); eb.insert(0, "1"); eb.grid(row=0, column=3, padx=5)
     
-    lbl_res = tk.Label(c_f, text="", font=("Arial", 9), justify="left")
+    lbl_res = tk.Label(c_f, text="", font=("time new roman", 20), justify="left")
     lbl_res.pack(pady=5)
 
     def run():
@@ -84,12 +84,12 @@ def p_grado():
     em.bind("<Return>", lambda event: run())
     eb.bind("<Return>", lambda event: run())
 
-    tk.Button(c_f, text="Graficar", command=run, bg="#e1e1e1").pack(pady=5)
+    tk.Button(c_f, text="Graficar", command=run, bg="#5900ff").pack(pady=5)
 
 # 2. Ecuación de Segundo Grado
 def s_grado():
     reset()
-    tk.Label(c_f, text="Ecuación de 2do Grado: y = a*x² + b*x + c", font=("Arial", 10, "bold")).pack(pady=5)
+    tk.Label(c_f, text="Ecuación de 2do Grado: y = a*x² + b*x + c", font=("time new roman", 20, "bold")).pack(pady=5)
     
     f = tk.Frame(c_f)
     f.pack()
@@ -139,7 +139,7 @@ def s_grado():
             y = a * (x**2) + b * x + c
             
             fig, ax = plt.subplots(figsize=(5, 3))
-            ax.plot(x, y, color="green", label=f"y = {a}x² + {b}x + {c}")
+            ax.plot(x, y, color="black", label=f"y = {a}x² + {b}x + {c}")
             
             ax.plot(vx, vy, 'mo', label=f"Vértice: ({vx:.2f}, {vy:.2f})")
             ax.plot(0, c, 'ro', label=f"Eje Y: (0, {c})")
@@ -159,7 +159,7 @@ def s_grado():
     eb.bind("<Return>", lambda event: run())
     ec.bind("<Return>", lambda event: run())
 
-    tk.Button(c_f, text="Graficar", command=run, bg="#e1e1e1").pack(pady=5)
+    tk.Button(c_f, text="Graficar", command=run, bg="#003cff").pack(pady=5)
 
 # 3. Sistema de Ecuaciones 2x2
 def sys_2x2():

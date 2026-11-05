@@ -3,7 +3,7 @@ from tkinter import messagebox
 import math
 
 def VentAna4 (): 
-    ventana4=teca.Tk()
+    ventana4=teca.Toplevel()
     ventana4.geometry("666x706")
     ventana4.iconbitmap ("l.ico")
     ventana4.config (bg= "#330000")
@@ -20,7 +20,8 @@ def VentAna4 ():
         import interfasg_ecuaciones
         interfasg_ecuaciones.ventana.deiconify()
 
-    def rec(): 
+    def rec():
+        botonoblicuangulo.config(state=teca.DISABLED) 
         #2 angulos y 3 lados ,la suma del angulo que tenemos y el otro debe dar 90 g
         def enter(event):
             event.widget.tk_focusNext().focus() #evento para q salte de linea 
@@ -72,7 +73,7 @@ def VentAna4 ():
                 messagebox.showwarning("letras" , "favor de no introduci letras  ")
 
         def trigonometriajeje ():
-            mostrar.delete ("1.0" , teca.END)
+            botonoblicuangulo.config(state=teca.NORMAL)
             hip=cerote(hipotenusa)
             co=cerote(catetoop)
             ca=cerote(catetoad)
@@ -84,13 +85,16 @@ def VentAna4 ():
             #tangente = opuesto / adya 
             def Operacionezzz ():
                     if hip !=0:  #si tenemos hipotenusa nada mas 
-                        if co==0: # si no hay cop ni angulos (solo ca)
+                        if co==0:
+                            if ca > hip:
+                                messagebox.showerror("Error geométrico", "El cateto adyacente no puede ser mayor que la hipotenusa\n ni la hipotenusa menor a un cateto.")
+                                return # si no hay cop ni angulos (solo ca)
                             if ang1==0 and ang2==0: 
                                 catetop=(hip**2-ca**2)**(1/2) # 
                                 mostrar.insert(teca.END , f"Cateto opuesto: {catetop}\n"  )
                                 valorrr= ca/hip
-                                radiant=math.radians (valorrr)
-                                ang_1ns= math.asin(radiant)
+                                radiant=math.acos(valorrr)
+                                ang_1ns= math.degrees(radiant)
                                 mostrar.insert(teca.END , f"angulo: {ang_1ns}\n")
                                 B= 90-ang_1ns
                                 mostrar.insert(teca.END , f"otro angulo: {B}\n")
@@ -117,12 +121,15 @@ def VentAna4 ():
                                 mostrar.insert(teca.END , f"cateto opuesto:{seno}\n")
                                 mostrar.insert(teca.END , f"angulo faltante:{90-ang}\n")
                         elif ca == 0:
+                            if co > hip:
+                                messagebox.showerror("Error geométrico", "El cateto opuesto no puede ser mayor que la hipotenusa \n ni la hipotenusa menor a un cateto .")
+                                return
                             if ang1==0 or ang2==0: 
                                 catetoad=(hip**2-co**2)**(1/2)
                                 mostrar.insert(teca.END , f"Cateto adyacente: {catetoad}\n")
                                 valorrr= co/hip
-                                radiant=math.radians (valorrr)
-                                ang_1ns= math.asin(radiant)
+                                radiant=math.asin (valorrr)
+                                ang_1ns= math.degrees(radiant)
                                 mostrar.insert(teca.END , f"angulo 1: {ang_1ns}\n" )
                                 B= 90-ang_1ns
                                 mostrar.insert(teca.END , f"otro angulo:{B} \n") #CAH coseno = adyacente / hipo
@@ -147,12 +154,13 @@ def VentAna4 ():
                             cadya= hip*valor_coco
                             mostrar.insert(teca.END , f"cateto adyacente: {cadya}\n")
                      
-                    #hipo es cateto/ co o seno grado
+                    #hipo es cateto/co o seno grado
                     else:
-                        if hip==0:  
+                        if hip==0 and ang1==0 and ang2==0:
+                              
                             hipopo=(ca**2+co**2)**(1/2)
                             mostrar.insert(teca.END , f"hipotenusa: {hipopo}\n"   )
-                            valor = co/ca 
+                            valor=co/ca 
                             radiante=math.radians (valor )
                             anguloA= math.atan (radiante)
                             mostrar.insert(teca.END , f"Valor del 1er angulo: {anguloA}\n")
@@ -161,14 +169,14 @@ def VentAna4 ():
 
 
 
-                        elif co==0 and hip==0:#solo tenemos adyacente y un angulo  asi q usamos coseno 
+                        if co==0 and hip==0:#solo tenemos adyacente y un angulo  asi q usamos coseno 
                             if ang1+ang2==90:
-                                angq= ang1
+                                angq=ang1
                                 raid=math.radians (angq)
                                 valor_tan= math.tan(raid)
                                 senn= math.sin(raid )
                                 caopp= ca/valor_tan
-                                señ= ca/ senn
+                                señ= ca/senn
                                 mostrar.insert(teca.END , f"cateto opuesto{caopp}")
                                 mostrar.insert(teca.END , f" hipotenusa:{señ}")
                             elif ang1+ang2>= 90: 
@@ -180,17 +188,29 @@ def VentAna4 ():
                                 tangente = math.tan(radiante) 
                                 ca_op =ca*tangente                      
                                 hipot=ca/valor_coseno
-                                triple = 90-ang 
+                                triple = 90-angr
                                 mostrar.insert(teca.END , f"cateto opuesto: {ca_op}\n" )
                                 mostrar.insert(teca.END, f"hipotenusa  : {hipot}\n")
                                 mostrar.insert(teca.END, f"angulo 2 :{triple}\n")
-                        elif ca==0 and hip==0: 
+                        if ca==0 and hip==0: 
+                            if ang1+ang2==90:
+                                zang= ang1 
+                                radp= math.radians(zang)
+                                tas= math.tan(radp)
+                                zeno= math.sin(radp)
+                                adyacente= co/tas
+                                hipostar= co/zeno 
+                                mostrar.insert(teca.END , f" cateto adyacnete: {adyacente}")
+                                mostrar.insert(teca.end, f"hipotenusa: {hipostar}")
+                            elif ang1+ang2>= 90:
+                                messagebox.showerror ("angulozzz" , "los angulos no deben ser mayores a 90grados ")
                             angm=ang1 if ang2==0 else ang2 
                             radiantezz= math.radians(angm)
                             valor_seno= math.sin(radiantezz)
                             t=math.tan(radiantezz)
-                            h=co//valor_seno 
+                            h=co/valor_seno 
                             ca_ad= co/t
+                            mostrar.insert(teca.END , f"angulo: {90-angm}")
                             mostrar.insert(teca.END, f"hipotenusa: {h}\n")
                             mostrar.insert(teca.END, f"cateto adyacente: {ca_ad}\n")
                          
@@ -203,6 +223,7 @@ def VentAna4 ():
         ns.place(x=140 ,y=350)
         
     def obli(): 
+        botonrectangulo.config(state=teca.DISABLED)
         def enter(event):
             event.widget.tk_focusNext().focus() #evento para q salte de linea 
             return "break"
@@ -224,7 +245,7 @@ def VentAna4 ():
             lado=teca.Entry(ventana4,width=8)
             lado.place(x=550 , y=370)
             lado.bind ("<Return>",enter)
-            mostrar=teca.Text (ventana4,width=40, height=10)
+            mostrar=teca.Text (ventana4,width=30, height=10)
             mostrar.place (x=400 , y=430)
             
             
@@ -238,6 +259,7 @@ def VentAna4 ():
                 except: 
                     messagebox.showwarning("letras" , "favor de no introduci letras  ")
             def trigo_obli(): 
+                botonrectangulo.config(state=teca.NORMAL)
                 A=valores(angulo1)
                 B=valores(angulo2)
                 a=valores(lado)
@@ -250,7 +272,7 @@ def VentAna4 ():
                 senoA= math.sin(radinateA)
                 senoB=math.sin(radianteB)
                 senoC=math.sin(radianteC)            
-                ladob= a*senoB//senoA
+                ladob= a*senoB/senoA
                 mostrar.insert(teca.END , f"Lado b:{ladob}\n")
                 ladoc= a*senoC/senoA
                 mostrar.insert(teca.END, f"lado c: {ladoc} \n")
@@ -275,7 +297,7 @@ def VentAna4 ():
             angulo=teca.Entry (ventana4,width=8)
             angulo.place (x=550 , y=370)
             angulo.bind ("<Return>",enter)
-            mostrar=teca.Text (ventana4,width=40, height=10)
+            mostrar=teca.Text (ventana4,width=30, height=10)
             mostrar.place (x=400 , y=430)
             def valores(entry):
                 try:
@@ -287,7 +309,7 @@ def VentAna4 ():
                 except: 
                         messagebox.showwarning("letras" , "favor de no introduci letras  ") 
             def trigo_obli():
-                mostrar.delete ("1.0" , teca.END)
+                botonrectangulo.config(state=teca.NORMAL)
                 a=valores(lado1)
                 b=valores(lado2)
                 C=valores(angulo)
@@ -295,13 +317,11 @@ def VentAna4 ():
                 cosenoC=math.cos(radianteC) 
                 ladoc=a**2+b**2-2*a*b*cosenoC
                 c=ladoc**(1/2)
-                mostrar.insert("1.0" , "lado c: {c}" )
-
+                mostrar.insert(teca.END , f"lado c: {c}" )
                 ang_2=(b**2+c**2-a**2)/(2*b*c)
-                mostrar.insert(teca.END, f"Lado faltante : {ang_2}")
-                radianteA=math.asin(ang_2)
+                radianteA=math.acos(ang_2)
                 arcos=math.degrees(radianteA)
-                mostrar.insert(teca.END, f"angulo A: {arcos}" )
+                mostrar.insert(teca.END, f"Aangulo faltante: {arcos}" )
 
                 B=180-arcos-C
                 mostrar.insert(teca.END, f"angulo faltante: {B}" )
@@ -314,20 +334,20 @@ def VentAna4 ():
             tezto.place (x=450 , y= 230)
             té=teca.Label (ventana4,text="Lado a: ")
             té.place(x=450 , y= 310)
-            lado1= teca.Entry (ventana4,)
+            lado1= teca.Entry (ventana4,width=8)
             lado1.bind ("<Return>",enter)
             lado1.place (x= 550 ,  y= 310)
             t= teca.Label (ventana4,text="Lado b: ")
             t.place (x=450 , y=340 )
-            lado2=teca.Entry(ventana4,)
+            lado2=teca.Entry(ventana4,width=8)
             lado2.bind ("<Return>",enter)
             lado2.place (x=550 , y=340 )
             roy =teca.Label(ventana4,text="Lado c: ")
             roy.place(x=450 , y=370)
-            lado3=teca.Entry (ventana4,)
+            lado3=teca.Entry (ventana4,width=8)
             lado3.bind ("<Return>",enter)
             lado3.place (x=550 , y=370)
-            mostrar=teca.Text (ventana4,width=40, height=10)
+            mostrar=teca.Text (ventana4,width=30, height=10)
             mostrar.place (x=400 , y=430)
 
             def valores(entry):
@@ -340,16 +360,19 @@ def VentAna4 ():
                 except: 
                     messagebox.showwarning("letras" , "favor de no introduci letras  ")
             def trigo_obli(): 
-                
+                botonrectangulo.config(state=teca.NORMAL)
                 a=valores(lado1)
                 b=valores(lado2)
                 c=valores(lado3)
+                if (a + b <= c) or (a + c <= b) or (b + c <= a):
+                    messagebox.showerror("Error geométrico", "Los lados ingresados no forman un triángulo válido (la suma de dos lados debe ser mayor que el tercero).")
+                    return
                 valor= (b**2+c**2-a**2)/(2*b*c)
                 radiantes=math.acos(valor)
                 A=math.degrees(radiantes)
                 mostrar.insert(teca.END , f"angulo A: {A}")
                 valorB=(a**2+c**2-b**2)/ (2*a*c)
-                radiante=math.asin(valorB)
+                radiante=math.acos(valorB)
                 B= math.degrees(radiante)
                 mostrar.insert(teca.END, f"angulo B: {B}" )
 
@@ -363,21 +386,21 @@ def VentAna4 ():
             tezto.place (x=450 , y=230 )
             té=teca.Label (ventana4,text="Lado a: ")
             té.place(x=450 , y= 310)
-            lado1= teca.Entry (ventana4,)
+            lado1= teca.Entry (ventana4,width=8)
             lado1.place (x= 550 ,  y= 310)
             lado1.bind ("<Return>",enter)
             t= teca.Label (ventana4,text="Lado b: ")
             t.place (x=450 , y=340 )
-            lado2=teca.Entry(ventana4,)
+            lado2=teca.Entry(ventana4,width=8)
             lado2.place (x=550 , y=340 )
             lado2.bind ("<Return>",enter)
             roy =teca.Label(ventana4,text="Angulo A: ")
             roy.place(x=450 , y=370)
-            angulo=teca.Entry (ventana4,)
+            angulo=teca.Entry (ventana4,width=8)
             angulo.place (x=550 , y=370)
             angulo.bind ("<Return>",enter)
-            mostrar=teca.Text (ventana4,width=40, height=10)
-            mostrar.place (x=550 , y=430)
+            mostrar=teca.Text (ventana4,width=30, height=10)
+            mostrar.place (x=400 , y=430)
 
             def valores(entry):
                 try:
@@ -389,13 +412,13 @@ def VentAna4 ():
                 except: 
                         messagebox.showwarning("letras" , "favor de no introduci letras  ")
                 
-            def trigo_obli(): 
-                mostrar.delete ("1.0" , teca.END)
+            def trigo_obli():
+                botonrectangulo.config(state=teca.NORMAL) 
                 a=valores(lado1)
                 b=valores(lado2)
                 A=valores(angulo)
                 print (a,b,A)
-                radiante=math.radians(a)
+                radiante=math.radians(A)
                 seno=math.sin(radiante)
                 h=b*seno
                 print (h)
@@ -422,11 +445,11 @@ def VentAna4 ():
 
              
             limon = teca.Button(ventana4,text="mandar" , command=trigo_obli)
-            limon.place(x=200 , y=300)
+            limon.place(x=550 , y=400)
 
         def caso5():
             messagebox.showerror ("aviso" ," No es posibble resolver este triangulo , hay infinitos tamaños " ) 
-       
+            botonrectangulo.config(state=teca.NORMAL)
 
 
 
@@ -441,7 +464,7 @@ def VentAna4 ():
         c5=teca.Button (ventana4,text=" Caso AAA" , command=caso5)
         c5.place(x=450 , y=190)
         
-        pass 
+        
 
     botonrectangulo = teca.Button(ventana4,text= "trinagulo rectangulo " ,command=rec )
     botonoblicuangulo = teca.Button(ventana4,text="trinagulo oblicuángulo" ,command=obli)
@@ -452,7 +475,8 @@ def VentAna4 ():
     botonoblicuangulo.place (x=450 , y=90)
     ventana4.mainloop()
 
-VentAna4()
+
+
 
 
 

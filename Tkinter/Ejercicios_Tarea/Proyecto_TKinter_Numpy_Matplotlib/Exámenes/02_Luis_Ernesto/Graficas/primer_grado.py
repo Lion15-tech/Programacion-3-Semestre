@@ -15,7 +15,7 @@ def ventana_primer_grado():
     # Abre una ventana secundaria sin cerrar el menú principal.
     ventana = tk.Toplevel()
     ventana.title("Gráfica de ecuación de primer grado")
-    ventana.geometry("450x300")
+    ventana.geometry("850x600")
     ventana.resizable(False, False)
 
     try:
@@ -45,6 +45,10 @@ def ventana_primer_grado():
     tk.Label(marco, text="b:").grid(row=1, column=0, padx=10)
     entrada_b = tk.Entry(marco, width=15)
     entrada_b.grid(row=1, column=1)
+
+
+#ventana.withdraw() y ventana.deiconify()
+
 
     # Lee los números, calcula y=m*x+b y muestra la recta.
     def graficar():
@@ -84,6 +88,15 @@ def ventana_primer_grado():
         width=20
     )
     boton.pack(pady=10)
+
+    boton = tk.Button(
+        ventana,
+        text="volver",
+        command="cerrar_primer_grado",
+        width=20
+
+    )
+    boton.pack(pandy=10)
 
     # Presionar Enter ejecuta el boton Graficar
     # La tecla Enter invoca el mismo botón que se usa con el mouse.

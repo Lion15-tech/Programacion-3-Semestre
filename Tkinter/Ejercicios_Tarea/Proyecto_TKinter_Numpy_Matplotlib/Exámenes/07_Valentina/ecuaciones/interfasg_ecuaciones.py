@@ -1,5 +1,4 @@
 import tkinter as teca 
-import numpy as snumpy 
 import boton1
 import boton2
 import boton3 
@@ -50,7 +49,7 @@ op3=teca.Button(ventana,text=" sistema de \n ecuaciones \nlineales ",
                         font = ("italic" , 16))
 op3.place ( x= 440 , y = 140)
 
-op4=teca.Button(text="trigonometria ",
+op4=teca.Button(ventana,text="trigonometria ",
                     command=seleccion_4,
                     bg= "#56070c",
                     fg = "#FDFDFD" , 

@@ -324,8 +324,16 @@ def ventana3():
                 y=nn.linspace(inicioy,finy,20)
 
                 X,Y= nn.meshgrid (x,y)
-                ZZZ= solufin[2]-X-Y
-                tresD.plot_surface (x,y,ZZZ)
+                Z1 = 6 - X - Y
+                Z2 = 3 - 2 * X + Y
+                Z3 = -2 + X + 2 * Y
+
+                tresD.plot_surface(X, Y, Z1, color="red",alpha=0.2, label=f"ecuación1")
+                tresD.plot_surface(X, Y, Z2, color="blue",alpha=0.2, label=f"ecuación2")
+                tresD.plot_surface(X, Y, Z3, color="orange",alpha=0.2, label=f"ecuación 3")
+
+                tresD.scatter([2], [1], [3], color="#F51463", s=40, label="puntos X,Y y Z ")
+                mate.legend()
                 mate.show()
         
             # X ancho ,f
@@ -360,7 +368,6 @@ def ventana3():
     botonreg.place (x= 5 , y= 50)
 
     ventana3g.mainloop ()
-
 
 
 

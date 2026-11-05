@@ -81,14 +81,14 @@ def ventana2():
             xf=vertice_x+5 #inicio y final parq se vea en todo jeje
             x=numpy.linspace(xi,xf, 100) #inicio,fin y 100 puntos , x son los direnetes puntos que tandra la parabola 
             y=AV.get()*(x**2)+BV.get()*x+CV.get()#calculo de y , Y son los punyos verticales 
-            yuka.plot (x, y , color= "yellow" , label=f" formula \n Y= {AV.get()}x^2 + ({BV.get()})x + ({CV.get()})") #plot crea la parabola  
+            yuka.plot (x, y , color= "#F88383" , label=f" formula \n Y= {AV.get()}x^2 + ({BV.get()})x + ({CV.get()})") #plot crea la parabola  
             yuka.plot (vertice_x , vertice_y,
                     label=f"Coordenada del vertice X: ({vertice_x},\nCoordenada del vertice Y {vertice_y})") #este crea un widgetsito q muestra el vertice 
             yuka.legend()
             yuka.show() #chow ps lo mantiene en pantallla , es un mainlopp2.0
-            ventana2g.destroy()
-            import interfasg_ecuaciones
-            interfasg_ecuaciones.ventana.deiconify()
+            #ventana2g.destroy()
+            #import interfasg_ecuaciones
+            #interfasg_ecuaciones.ventana.deiconify()
     botoñ = teca.Button (ventana2g,text= "click para graficar jeje" , command=ecuacion ,
                          bg=f2 ,fg=blanco)
     

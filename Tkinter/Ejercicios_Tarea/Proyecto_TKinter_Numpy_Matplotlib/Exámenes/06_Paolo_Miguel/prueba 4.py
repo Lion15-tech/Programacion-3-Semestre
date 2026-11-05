@@ -217,9 +217,9 @@ class AppCECYTEQ:
         canvas.create_polygon([pA[0], pA[1], pB[0], pB[1], pC[0], pC[1]], fill="#e6f0fa", outline="#003366", width=2)
 
         # Etiquetas Vértices
-        canvas.create_text(pA[0], pA[1] - 12, text="A", font=("Arial", 10, "bold"), fill="#d9534f")
-        canvas.create_text(pB[0] + 12, pB[1], text="B", font=("Arial", 10, "bold"), fill="#d9534f")
-        canvas.create_text(pC[0] - 12, pC[1], text="C", font=("Arial", 10, "bold"), fill="#d9534f")
+        canvas.create_text(pA[0], pA[1] - 12, text="A", font=("Arial", 10, "bold"), fill="#291b1a")
+        canvas.create_text(pB[0] + 12, pB[1], text="B", font=("Arial", 10, "bold"), fill="#1d1413")
+        canvas.create_text(pC[0] - 12, pC[1], text="C", font=("Arial", 10, "bold"), fill="#1f1515")
 
         # Etiquetas Lados
         canvas.create_text((pB[0] + pC[0]) / 2, (pB[1] + pC[1]) / 2 + 15, text=f"a={a:.2f}", font=("Arial", 9, "bold"), fill="#003366")
@@ -339,9 +339,9 @@ class AppCECYTEQ:
                 # Intersección con Y
                 py_b = cy - b * scale
                 if 0 <= py_b <= 430:
-                    canvas.create_oval(
+                    canvas.create_rectangle(
                         cx - 5, py_b - 5, cx + 5, py_b + 5,
-                        fill="#d9534f", outline=""
+                        fill="#1d1615", outline=""
                     )
 
                 # Intersección con X
@@ -349,9 +349,9 @@ class AppCECYTEQ:
                     x_inter = -b / m
                     if -15 <= x_inter <= 15:
                         px = cx + x_inter * scale
-                        canvas.create_oval(
+                        canvas.create_rectangle(
                             px - 5, cy - 5, px + 5, cy + 5,
-                            fill="#5cb85c", outline=""
+                            fill="#000000", outline=""
                         )
 
                     x_text = f"{x_inter:.2f}"
@@ -466,7 +466,7 @@ class AppCECYTEQ:
                 if len(puntos) >= 4:
                     canvas.create_line(
                         puntos,
-                        fill="#d9534f",
+                        fill="#1b1414",
                         width=2,
                         smooth=True
                     )
@@ -507,7 +507,7 @@ class AppCECYTEQ:
                             canvas.create_oval(
                                 px - 5, cy - 5,
                                 px + 5, cy + 5,
-                                fill="#5cb85c",
+                                fill="#121612",
                                 outline=""
                             )
 
@@ -559,7 +559,7 @@ class AppCECYTEQ:
         tk.Label(
             self.main_container,
             text="Sistema de Ecuaciones 2x2",
-            font=("Arial", 14, "bold"),
+            font=("Roboto", 30, "bold"),
             bg="#f4f6f9"
         ).pack(pady=10)
 
@@ -705,7 +705,7 @@ class AppCECYTEQ:
             command=resolver,
             bg="#003366",
             fg="white",
-            font=("Arial", 9, "bold")
+            font=("Roboto", 70, "bold")
         )
         btn.grid(row=0, column=6, rowspan=2, padx=15)
 

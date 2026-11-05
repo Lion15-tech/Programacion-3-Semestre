@@ -59,7 +59,7 @@ def ventana_ec1 ():
         yp1= int(Ypar1.get())
         yp2= int(Ypar2.get())
     
-        pendiente=yp2 - yp1 / xp2-xp1
+        pendiente=(yp2 - yp1)/(xp2-xp1)
         print (pendiente)
             #y=mx+b 
             #ejemplo jeje 4x-2 = 8  

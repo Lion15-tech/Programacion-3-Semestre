@@ -33,12 +33,12 @@ def preparar(titulo, formula):
     limpiar()
     panel_entradas = tk.Frame(contenedor, padx=10, pady=10); panel_entradas.pack(side="left", fill="y")
     panel_grafica = tk.Frame(contenedor); panel_grafica.pack(side="right", fill="both", expand=True)
-    tk.Label(panel_entradas, text=titulo, font=("Arial",15,"bold"), wraplength=300).pack(pady=(0,8))
+    tk.Label(panel_entradas, text=titulo, font=("times new roman ",15,"bold"), wraplength=300).pack(pady=(0,8))
     tk.Label(panel_entradas, text=formula, font=("Arial",11)).pack(pady=(0,10))
     grafica = Figure(figsize=(6.5,5.3), dpi=100)
     canvas = FigureCanvasTkAgg(grafica, master=panel_grafica); canvas.get_tk_widget().pack(fill="both", expand=True)
-    etiqueta_resultado = tk.Label(panel_entradas, text="", justify="left", anchor="w", wraplength=300, font=("Arial",10))
-    etiqueta_resultado.pack(fill="x", pady=10)
+    etiqueta_resultado = tk.Label(panel_entradas, text="", justify="left", anchor="w", wraplength=100, font=("Arial",10))
+    etiqueta_resultado.pack(fill="x", pady=5)
 
 def mover_siguiente(event, caja):
     """Enter mueve al siguiente Entry; en el último campo activa el botón de cálculo."""
