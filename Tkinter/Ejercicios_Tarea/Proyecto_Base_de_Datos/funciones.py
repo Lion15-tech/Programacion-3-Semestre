@@ -41,7 +41,7 @@ def Crear_Ventana_Clientes(ventana_padre):
                 bg=est.COLOR_FONDO,
                 fg=est.COLOR_TEXTO,
                 pady=20
-                ).pack(padx=1500)
+                ).pack(padx=15)
         # Entrys
         tk.Label(panel_para_modificar,
                  text="Nombre:",
@@ -101,7 +101,7 @@ def Crear_Ventana_Estado_Membresia(ventana_padre):
         # Creamos el Frame para la tabla
         panel_tabla = tk.Frame(ventana,
                                 bg=est.FONDO_TABLA)
-        panel_tabla.pack(side="right", expand=True, fill="both", padx=15, pady=1005)
+        panel_tabla.pack(side="right", expand=True, fill="both", padx=15, pady=15)
 
         # ------ Titulo ------
         tk.Label(panel_para_modificar,
