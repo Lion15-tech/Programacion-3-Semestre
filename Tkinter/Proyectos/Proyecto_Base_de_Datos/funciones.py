@@ -617,7 +617,7 @@ def Crear_Ventana_Inversion(ventana_padre):
         nombre = tk.Entry(entrys_Pagos,
                         justify="center")
         nombre.pack(padx=15, pady=15)
-        # V
+        
 
 
 def Crear_Ventana_Instalaciones(ventana_padre):
