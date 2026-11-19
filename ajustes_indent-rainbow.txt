@@ -11,4 +11,6 @@ Preference: Open User Settings (JSON)
         "rgba(125, 207, 182, 0.6)",
         "rgba(255, 0, 127, 0.6)"
         ]
+	"indentRainbow.errorColor": "rgba(0,0,0,0)"
+
 }
